@@ -33,8 +33,7 @@ Use structured markdown with these sections:
 
 ## Principles
 
-- Prefer simplicity over cleverness.
-- Every choice must have a stated reason.
+- Prefer simplicity over cleverness. Every choice must have a stated reason.
 - A design that cannot be implemented in a sprint is probably over-engineered.
 - Default to boring technology unless there's a specific reason not to.
 - Think about failure modes: what happens when X goes down?
