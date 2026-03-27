@@ -33,6 +33,7 @@ Every component that fetches data or performs async operations must handle:
 - Ensure keyboard navigation: Tab order, Enter/Space to activate, Escape to dismiss
 - Use `aria-live` regions for dynamic content updates (search results, error messages)
 - Maintain visible focus indicators
+- Never use `aria-hidden` on content that becomes visible via CSS (screen readers won't see it)
 
 ## Principles
 
