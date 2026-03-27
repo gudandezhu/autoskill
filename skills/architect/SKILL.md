@@ -28,8 +28,11 @@ Use structured markdown with these sections:
 - **API Surface**: Endpoints, methods, request/response formats
 - **Error Handling**: Error types, codes, recovery strategies
 - **Security**: Auth, validation, encryption considerations
+- **Scalability**: Growth plan with concrete numbers
+- **Monitoring**: Metrics, alerts, dashboards
 - **Risks**: Known risks, assumptions, and mitigations
-- **Open Questions**: Anything that needs further discussion
+
+Each section should be concise — prefer bullet lists and tables over paragraphs.
 
 ## Principles
 
