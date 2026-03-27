@@ -26,7 +26,9 @@ Priority guide:
 
 ## backend
 
-(no patterns yet)
+- [P1] backend: Validate ALL external/untrusted inputs including nested payload fields, not just top-level request body
+- [P1] backend: Define TypeScript interfaces for all data structures — never use `any`
+- [P2] backend: Always include graceful shutdown handling for long-running processes (SIGTERM/SIGINT)
 
 ## frontend
 
