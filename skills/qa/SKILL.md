@@ -35,6 +35,7 @@ Prioritize by risk and impact:
 3. **Error paths**: Invalid input, missing data, timeouts, network failures
 4. **Edge cases**: Unicode strings, concurrent access, large payloads, null values
 5. **Integration points**: API contracts, database queries, external service calls
+6. **System limits**: Max connections, max channels, max message size, max payload length — test at and beyond the documented limits
 
 ## Test Quality Checklist
 
