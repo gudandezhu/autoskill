@@ -37,9 +37,16 @@ Every component that fetches data or performs async operations must handle:
 - Maintain visible focus indicators
 - Never use `aria-hidden` on content that becomes visible via CSS (screen readers won't see it)
 
+## Form Patterns
+
+- Validate on blur (not on every keystroke). Show inline error messages below the field.
+- Reserve space for inline validation messages to prevent layout shift when errors appear.
+- Track form validity in state; disable submit button until all fields are valid.
+
 ## Principles
 
 - Mobile-first responsive design. Write mobile styles first, use min-width media queries for larger screens.
 - Content first, decoration second.
 - Progressive enhancement: works without JS, enhanced with JS.
-- No layout shift during state transitions (reserve space for loading states).
+- No layout shift during state transitions (reserve space for loading states and validation messages).
+- Expose all configurable values (debounce time, min query length, page size, timeouts) as component props with sensible defaults.
