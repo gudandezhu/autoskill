@@ -32,7 +32,8 @@ Priority guide:
 
 ## frontend
 
-(no patterns yet)
+- [P1] frontend: Build component skeleton from semantic HTML elements (section, form, nav, article, header) not generic divs
+- [P2] frontend: Use mobile-first responsive: mobile styles as default, min-width media queries for larger screens
 
 ## qa
 
