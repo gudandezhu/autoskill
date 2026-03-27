@@ -19,7 +19,10 @@ To set up a new training run, work with the user to:
    - `evaluate/rubrics.md` -- fixed scoring rubrics. Do not modify.
    - `skills/<skill>/SKILL.md` -- the file you modify.
    - `experience/patterns.md` -- accumulated best practices.
-5. **Initialize results.tsv**: Create with header row if not present.
+5. **Initialize results.tsv**: Create with header row if not present:
+   ```
+   commit	task	score	delta	lines	status	description
+   ```
 6. **Establish baseline**: For each task of the target skill, execute the task
    using the current SKILL.md and score it. Record these as baseline entries.
 7. **Confirm and go**.
@@ -65,13 +68,13 @@ For each experiment:
 5. **Score**: Evaluate the output against the rubric in `evaluate/rubrics.md`.
    - Use a fresh evaluation context. Do NOT let the scoring process see the SKILL.md.
    - Apply the rubric strictly and mechanically.
-   - Score = checklist_score (0-50) + quality_score (0-50) = total (0-100).
+   - Score = checklist_score (0-50) + quality_score (10-50, = sum_of_5_dimensions * 2) = total (10-100).
 
 6. **Record**: Log the result in `results.tsv`.
 
 7. **Decide**:
    - If score >= baseline_for_this_task + 3: KEEP. The branch advances.
-   - If score < baseline + 3: DISCARD. `git reset --soft HEAD~1`.
+   - If score < baseline + 3: DISCARD. `git reset`.
    - If crash: investigate, fix if trivial, skip if fundamental.
 
 ## Output Format
@@ -87,28 +90,29 @@ Total: Y + W = T points
 
 ## Logging Results
 
-The TSV has 7 columns (tab-separated, NOT comma-separated):
+The TSV has 8 columns (tab-separated, NOT comma-separated):
 
 ```
-commit	task	score	delta	status	description
+commit	task	score	delta	lines	status	description
 ```
 
 1. git commit hash (short, 7 chars)
 2. task identifier (e.g. `architect-001`)
-3. score achieved (0-100, use 0 for crashes)
+3. score achieved (10-100, use 0 for crashes)
 4. delta from baseline for this task (e.g. `+7` or `-2`, use `baseline` for first run)
-5. status: `keep`, `discard`, or `crash`
-6. short text description of the experimental change
+5. SKILL.md line count (track complexity, like memory_gb in autoresearch)
+6. status: `keep`, `discard`, or `crash`
+7. short text description of the experimental change
 
 Example:
 
 ```
-commit	task	score	delta	status	description
-a1b2c3d	architect-001	72	baseline	baseline	baseline
-b2c3d4e	architect-001	81	+9	keep	add "enumerate 3 alternatives" rule
-c3d4e5f	architect-002	68	baseline	keep	baseline
-d4e5f6g	architect-002	65	-3	discard	add verbose explanation template
-e5f6g7h	architect-001	0	crash	rename section (invalid markdown)
+commit	task	score	delta	lines	status	description
+a1b2c3d	architect-001	72	baseline	39	baseline	baseline
+b2c3d4e	architect-001	81	+9	42	keep	add "enumerate 3 alternatives" rule
+c3d4e5f	architect-002	68	baseline	42	baseline	baseline
+d4e5f6g	architect-002	65	-3	55	discard	add verbose explanation template
+e5f6g7h	architect-001	0	crash	42	crash	rename section (invalid markdown)
 ```
 
 ## The Experiment Loop
@@ -128,7 +132,7 @@ LOOP FOREVER:
 9. Score the output against the rubric (fresh context, mechanical application).
 10. Record in results.tsv (do NOT commit results.tsv -- leave it untracked).
 11. If score >= baseline + 3: KEEP. Extract any new patterns into patterns.md.
-12. If score < baseline + 3: DISCARD. `git reset --soft HEAD~1`.
+12. If score < baseline + 3: DISCARD. `git reset`.
 13. If crash: read the error, fix if trivial, skip if fundamental. Log `crash` status.
 
 The idea is that you are a completely autonomous skill trainer trying out prompt

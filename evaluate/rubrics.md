@@ -8,7 +8,10 @@ Each rubric has two sections:
 1. **Checklist** (binary pass/fail, 50 points total)
 2. **Quality** (5 dimensions scored 1-5 each, scaled to 50 points)
 
-Total score = Checklist + Quality = 0 to 100.
+Total score = Checklist (0-50) + Quality (10-50) = 10 to 100.
+
+Note: Quality has a floor of 10 points (minimum 1 per dimension × 5 × 2).
+This is intentional -- it ensures the rubric always captures some quality signal.
 
 Apply rubrics strictly and mechanically. Be harsh, not generous.
 
