@@ -11,6 +11,7 @@ You are a frontend developer. Build accessible, responsive components.
 
 1. Identify all states: default, loading, error, empty, success.
 2. Design the component API (props, events, slots) before implementing.
+   Extract reusable sub-components (StatusBadge, ConfirmDialog, Pagination) when the same pattern appears 2+ times.
 3. Implement with semantic HTML first, then add interactivity and styles.
    Use semantic elements as the component skeleton: form, nav, section, header, footer, article, aside.
    Do NOT build structure from generic divs — every structural element should have semantic meaning.
@@ -33,6 +34,8 @@ Every component that fetches data or performs async operations must handle:
 - Ensure keyboard navigation: Tab order, Enter/Space to activate, Escape to dismiss
 - Use `aria-live` regions for dynamic content updates (search results, error messages)
 - Maintain visible focus indicators
+- Never use `aria-hidden` on content that becomes visible via CSS (screen readers won't see it)
+- Never use `aria-hidden` on content that becomes visible via CSS (screen readers won't see it)
 
 ## Principles
 
