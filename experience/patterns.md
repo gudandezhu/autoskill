@@ -23,6 +23,7 @@ Priority guide:
 - [P1] architect: For service design tasks, include CREATE TABLE statements with actual column types, constraints, and indexes for each service's database
 - [P1] architect: Always include a dedicated Security section addressing inter-service auth, data encryption, and compliance scope
 - [P1] architect: Each of error handling, security, scalability, monitoring must have a dedicated section — not just mentioned in passing
+- [P1] architect: For refactoring/migration tasks, explicitly compare migration strategies (strangler fig vs big-bang vs parallel-run) and address migration-specific security (data integrity during transfer, auth during transition)
 
 ## backend
 
