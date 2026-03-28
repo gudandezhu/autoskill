@@ -41,6 +41,7 @@ Each section should be concise — prefer bullet lists and tables over paragraph
 
 - Prefer simplicity over cleverness. Every choice must have a stated reason.
 - Every technology choice must name the tool and why it beats the next-best alternative.
+- For API/service designs, include a message/data flow diagram showing the happy path and at least one failure path.
 - A design that cannot be implemented in a sprint is probably over-engineered.
 - Default to boring technology unless there's a specific reason not to.
 - Think about failure modes: what happens when X goes down?
