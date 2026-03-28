@@ -1,6 +1,8 @@
 ---
 name: agile
 description: "Full-stack agile development workflow combining architect, backend, frontend, and QA roles. Use when taking a feature from requirements to production-ready code."
+references:
+  - cross-phase-rules.md
 ---
 
 # Agile Full-Stack Development
@@ -70,10 +72,7 @@ Switch to QA mindset. Write tests that catch bugs and prevent regressions.
 
 ## Cross-Phase Rules
 
-- **API contract is law**: The design doc's API contract is the source of truth. Backend implements it exactly; frontend consumes it exactly; QA tests against it.
-- **Type consistency**: TypeScript interfaces defined in backend must match what frontend consumes. When backend changes a type, frontend and tests must update accordingly.
-- **Error contract**: Error codes and response formats from the design must be consistent across backend implementation, frontend error handling, and QA assertions.
-- **Each phase produces artifacts**: Design doc → Backend code → Frontend code → Tests. No phase is skipped.
+See [cross-phase-rules.md](cross-phase-rules.md) for cross-phase contracts and the artifact chain.
 
 ## Principles
 
