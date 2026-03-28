@@ -18,7 +18,7 @@ Modify SKILL.md → Execute task → Score against rubric → Keep or discard
 
 - **SKILL.md** (editable): The skill prompt being trained
 - **tasks.md** (fixed): Task suite that defines the evaluation
-- **rubrics.md** (fixed): Scoring criteria (0-100)
+- **rubric.md** (fixed): Scoring criteria (0-100)
 - **results.tsv**: Experiment log tracking all attempts
 
 Improvements are kept via git commits. Failures are discarded with git reset.
@@ -27,40 +27,38 @@ Improvements are kept via git commits. Failures are discarded with git reset.
 
 ```
 autoskill/
-├── autoskill.md           # Training instructions (the "program")
+├── roles/                      # Per-role: skill + evaluation (co-located)
+│   ├── architect/
+│   │   ├── SKILL.md            # Trainable skill
+│   │   ├── tasks.md            # Fixed evaluation tasks
+│   │   └── rubric.md           # Fixed scoring rubric
+│   ├── backend/
+│   ├── frontend/
+│   ├── qa/
+│   ├── explorer/
+│   └── ...
 ├── evaluate/
-│   ├── tasks.md           # Fixed task suite (12 tasks, 3 per role)
-│   └── rubrics.md         # Fixed scoring rubrics
-├── skills/
-│   ├── architect/SKILL.md # Trainable skill
-│   ├── backend/SKILL.md
-│   ├── frontend/SKILL.md
-│   └── qa/SKILL.md
+│   ├── GUIDE.md                # How to write tasks and rubrics
+│   └── scoring-protocol.md     # Shared scoring protocol
 ├── experience/
-│   └── patterns.md        # Accumulated best practices
-└── results.tsv            # Experiment log (untracked)
+│   └── patterns.md             # Accumulated best practices
+└── results.tsv                 # Experiment log (untracked)
 ```
+
+Each role directory is self-contained: skill, tasks, and rubric live together.
+Adding a role = adding a directory.
+
+## Adding New Roles
+
+1. Create `roles/<role>/SKILL.md` with initial skill definition
+2. Run `/generate-baseline <role>` to auto-generate tasks and rubric
+3. Or manually create `roles/<role>/tasks.md` and `roles/<role>/rubric.md`
 
 ## Deploy Trained Skills
 
 Copy improved skills to your Claude Code skills directory:
 
 ```bash
-cp skills/architect/SKILL.md ~/.claude/skills/architect/SKILL.md
-cp skills/backend/SKILL.md ~/.claude/skills/backend/SKILL.md
-cp skills/frontend/SKILL.md ~/.claude/skills/frontend/SKILL.md
-cp skills/qa/SKILL.md ~/.claude/skills/qa/SKILL.md
+cp roles/architect/SKILL.md ~/.claude/skills/architect/SKILL.md
+cp roles/backend/SKILL.md ~/.claude/skills/backend/SKILL.md
 ```
-
-## Adding New Tasks
-
-Edit `evaluate/tasks.md` to add tasks for a role. Follow the existing format:
-task ID, context, requirements, and expected output format.
-
-Then add corresponding checklist items to the rubric in `evaluate/rubrics.md`.
-
-## Adding New Roles
-
-1. Create `skills/<role>/SKILL.md` with initial skill definition
-2. Add tasks in `evaluate/tasks.md` under a new `## <Role> Tasks` section
-3. Add a rubric in `evaluate/rubrics.md` under a new `## <Role> Rubric` section

@@ -11,7 +11,7 @@ The user invoked: `/autoskill $ARGUMENTS`
 
 ## Phase 0: Validate Input
 
-1. Parse `$ARGUMENTS` to extract the role. Valid roles: `architect`, `backend`, `frontend`, `qa`, `agile`.
+1. Parse `$ARGUMENTS` to extract the role. Valid roles: `architect`, `backend`, `frontend`, `qa`, `agile`, `explorer`.
 2. If no role provided or invalid role, stop and tell the user to run `/autoskill <role>` with one of the valid roles.
 3. Confirm with the user: "Start training **$ROLE**? This will create branch `autoskill/<date>-<role>` and run experiments autonomously."
 4. Confirm experiment budget: "Experiment budget (default 100, press Enter for default):"
@@ -21,10 +21,10 @@ The user invoked: `/autoskill $ARGUMENTS`
 
 Read these files for full context:
 - `autoskill.md` — the training program (follow it exactly)
-- `evaluate/tasks.md` — fixed task suite (NEVER modify)
-- `evaluate/rubrics.md` — fixed scoring rubrics (NEVER modify)
-- `skills/$ROLE/SKILL.md` — the trainable skill (this is the primary file you edit)
-- `skills/$ROLE/*.md` — reference files listed in SKILL.md's `references` frontmatter (read for context, can also edit)
+- `roles/$ROLE/tasks.md` — fixed task suite for this role (NEVER modify)
+- `roles/$ROLE/rubric.md` — fixed scoring rubric for this role (NEVER modify)
+- `roles/$ROLE/SKILL.md` — the trainable skill (this is the primary file you edit)
+- `roles/$ROLE/*.md` — reference files listed in SKILL.md's `references` frontmatter (read for context, can also edit)
 - `experience/patterns.md` — accumulated best practices
 
 Then execute these steps:
@@ -35,10 +35,10 @@ Then execute these steps:
    ```
    commit	task	score	delta	lines	status	direction	description
    ```
-4. **Establish baseline**: For EACH task of the target role in `evaluate/tasks.md`:
+4. **Establish baseline**: For EACH task of the target role in `roles/$ROLE/tasks.md`:
    a. Read the task description.
-   b. Execute the task **3 times** by generating output as if you are an agent following `skills/$ROLE/SKILL.md`. Each run must be independent — do not reuse output from a previous run.
-   c. Score each run against the rubric in `evaluate/rubrics.md` using a fresh evaluation context:
+   b. Execute the task **3 times** by generating output as if you are an agent following `roles/$ROLE/SKILL.md`. Each run must be independent — do not reuse output from a previous run.
+   c. Score each run against the rubric in `roles/$ROLE/rubric.md` using a fresh evaluation context:
       - Go through each of the 10 checklist items. Award 5 if clearly present, 0 if not.
       - Score each of the 5 quality dimensions from 1 to 5.
       - Calculate: `total = checklist_points + (sum_of_quality_scores * 2)`
@@ -60,22 +60,22 @@ LOOP (up to experiment budget):
 5. **Form hypothesis**: Based on patterns.md, past results, reference files, and rubric criteria, form a specific hypothesis:
    "Adding/Removing/Changing X should improve score on <task-id> because Y."
    Tag it with a direction family (e.g. `security`, `structure`, `conciseness`, `error-handling`).
-6. **Modify SKILL.md or reference files**: Make one small, targeted change to `skills/$ROLE/SKILL.md` or one of its reference files. Keep it minimal — one idea per experiment.
+6. **Modify SKILL.md or reference files**: Make one small, targeted change to `roles/$ROLE/SKILL.md` or one of its reference files. Keep it minimal — one idea per experiment.
 7. **Validate SKILL.md**: After modification, verify:
    - YAML frontmatter parses correctly (name, description, references fields)
    - All files listed in `references` exist in the same directory
    - Markdown structure is intact (no broken headers, lists, or links)
    If validation fails, fix or skip the experiment.
-8. **Commit**: `git add skills/ && git commit -m "hypothesis: <your hypothesis>"` with a clear message. Commit only SKILL.md and its reference files.
+8. **Commit**: `git add roles/$ROLE/ && git commit -m "hypothesis: <your hypothesis>"` with a clear message. Commit only SKILL.md and its reference files.
 9. **Execute task**: Generate output as if you are the agent following the modified SKILL.md.
    Produce a complete, production-quality response. Do not think about scoring while
    generating — focus only on following the skill instructions.
 10. **Score output via subagent** (structural isolation):
     Spawn a fresh subagent using the Agent tool with `subagent_type: "general-purpose"`.
     The subagent prompt must:
-    - Instruct it to read `evaluate/rubrics.md` and the relevant section of `evaluate/tasks.md`
+    - Instruct it to read `roles/$ROLE/rubric.md` and `roles/$ROLE/tasks.md`
     - Provide the generated output to score
-    - Explicitly forbid reading any file under `skills/`
+    - Explicitly forbid reading any file under `roles/$ROLE/` except `tasks.md` and `rubric.md`
     - Instruct it to apply the rubric mechanically and follow the scoring anchoring rules
     - Return the score in the standard format (checklist points + quality sum * 2)
     The subagent has a clean context — it genuinely does not know what SKILL.md
@@ -102,12 +102,12 @@ LOOP (up to experiment budget):
 
 ## Constraints
 
-- **NEVER** modify `evaluate/tasks.md` or `evaluate/rubrics.md`.
+- **NEVER** modify `roles/$ROLE/tasks.md` or `roles/$ROLE/rubric.md`.
 - **NEVER** modify `autoskill.md`.
 - **NEVER** install packages or add dependencies.
 - **NEVER** leak rubric specifics into SKILL.md (e.g., don't add "must have 10 checklist items" to the skill).
 - **NEVER** stop the loop to ask if you should continue (except at budget exhaustion). You are autonomous.
-- Only edit files under `skills/$ROLE/` for the skill being trained (SKILL.md and reference files).
+- Only edit `roles/$ROLE/SKILL.md` and its reference files for the skill being trained.
 - Only edit `experience/patterns.md` to add/prune patterns.
 - Simplicity criterion: Prefer shorter, more concise SKILL.md. A 10-line reduction with equal score is a strict improvement. SKILL.md body over 150 lines must have content extracted to reference files.
 - Each experiment should take ~2-5 minutes. If an experiment stalls for >10 minutes, skip it.

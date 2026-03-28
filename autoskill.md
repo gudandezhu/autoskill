@@ -15,9 +15,9 @@ To set up a new training run, work with the user to:
    The branch `autoskill/<tag>-<skill>` must not already exist.
 3. **Create the branch**: `git checkout -b autoskill/<tag>-<skill>` from current master.
 4. **Read the in-scope files** for full context:
-   - `evaluate/tasks.md` -- fixed task suite. Do not modify.
-   - `evaluate/rubrics.md` -- fixed scoring rubrics. Do not modify.
-   - `skills/<skill>/SKILL.md` -- the file you modify.
+   - `roles/<skill>/tasks.md` -- fixed task suite. Do not modify.
+   - `roles/<skill>/rubric.md` -- fixed scoring rubrics. Do not modify.
+   - `roles/<skill>/SKILL.md` -- the file you modify.
    - `experience/patterns.md` -- accumulated best practices.
 5. **Initialize results.tsv**: Create with header row if not present:
    ```
@@ -34,13 +34,13 @@ Once you get confirmation, kick off the experimentation.
 Each experiment evaluates a single SKILL.md modification against a single task.
 
 **What you CAN do:**
-- Modify `skills/<skill>/SKILL.md` -- this is the only file you edit for the skill itself.
+- Modify `roles/<skill>/SKILL.md` -- this is the only file you edit for the skill itself.
 - Read `experience/patterns.md` for inspiration when proposing changes.
 - Add to `experience/patterns.md` when a kept change reveals a new generalizable pattern.
 - Prune `experience/patterns.md` when it exceeds 200 lines.
 
 **What you CANNOT do:**
-- Modify `evaluate/tasks.md` or `evaluate/rubrics.md`. These are read-only.
+- Modify `roles/<skill>/tasks.md` or `roles/<skill>/rubric.md`. These are read-only.
 - Modify `autoskill.md`. This is human-controlled.
 - Install packages or add dependencies.
 - Make the evaluation easier by leaking rubric specifics into the skill prompt.
@@ -53,10 +53,10 @@ Each experiment evaluates a single SKILL.md modification against a single task.
 
 For each experiment:
 
-1. **Select task**: Pick the next task for the target skill from `evaluate/tasks.md`.
+1. **Select task**: Pick the next task for the target skill from `roles/<skill>/tasks.md`.
    Prefer tasks with fewer experiments. Track which tasks have been tested.
 
-2. **Modify**: Make one experimental change to `skills/<skill>/SKILL.md`.
+2. **Modify**: Make one experimental change to `roles/<skill>/SKILL.md`.
    Keep changes small and targeted. One idea per experiment.
 
 3. **Commit**: `git commit -m "hypothesis: ..."` describing what you expect to improve.
@@ -65,7 +65,7 @@ For each experiment:
    - Generate the output as if you were the agent following the skill instructions.
    - Save the output to a temporary file or keep it in context.
 
-5. **Score**: Evaluate the output against the rubric in `evaluate/rubrics.md`.
+5. **Score**: Evaluate the output against the rubric in `roles/<skill>/rubric.md`.
    - Use a fresh evaluation context. Do NOT let the scoring process see the SKILL.md.
    - Apply the rubric strictly and mechanically.
    - Score = checklist_score (0-50) + quality_score (10-50, = sum_of_5_dimensions * 2) = total (10-100).
