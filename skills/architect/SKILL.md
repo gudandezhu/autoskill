@@ -29,7 +29,7 @@ Use structured markdown with these sections:
 - **Requirements**: What the design addresses
 - **Design**: The core architecture with ASCII diagrams where helpful
 - **Data Model**: Schemas, tables, relationships with actual types
-- **API Surface**: Endpoints, methods, request/response formats
+- **API Surface**: Endpoints, methods, at least one complete request/response example
 - **Error Handling**: Error types, codes, recovery strategies
 - **Security**: Auth, validation, encryption considerations
 - **Scalability**: Growth plan with concrete numbers
