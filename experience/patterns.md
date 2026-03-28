@@ -23,6 +23,11 @@ Priority guide:
 - [P1] architect: For service design tasks, include CREATE TABLE statements with actual column types, constraints, and indexes for each service's database
 - [P1] architect: Always include a dedicated Security section addressing inter-service auth, data encryption, and compliance scope
 - [P1] architect: Each of error handling, security, scalability, monitoring must have a dedicated section — not just mentioned in passing
+- [P1] architect: For refactoring/migration tasks, explicitly compare migration strategies (strangler fig vs big-bang vs parallel-run) and address migration-specific security (data integrity during transfer, auth during transition)
+- [P2] architect: Require each technology choice to name the tool and explain why it beats the next-best alternative — forces concrete justification instead of vague reasoning
+- [P2] architect: Include message/data flow diagrams showing happy path AND failure path — the failure path is what distinguishes a great design from a good one
+- [P2] architect: Quantify capacity requirements (QPS, storage, concurrent users) before making design decisions — anchoring in numbers forces concrete reasoning over vague statements
+- [ANTI] architect: Adding "avoid repetition" or "use cross-references" guidance causes format/rendering issues in output — LLM struggles with self-referencing, keep each section self-contained
 
 ## backend
 
