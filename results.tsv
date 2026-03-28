@@ -9,3 +9,5 @@ dba455d	architect-003	68	baseline	42	baseline	-	baseline (run 1/3)
 dba455d	architect-003	76	baseline	42	baseline	-	baseline (run 2/3)
 dba455d	architect-003	71	baseline	42	baseline	-	baseline (run 3/3)
 62b3d21	architect-003	90	+18	45	keep	structure	add refactoring-specific guidance for migration strategies and security
+46e6492	architect-002	0	-	45	discard	structure	add comparison table format for alternatives analysis section
+7bdfca5	architect-001	96	+4	46	keep	justification	require explicit next-best alternative justification for technology choices
