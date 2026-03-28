@@ -14,3 +14,4 @@ dba455d	architect-003	71	baseline	42	baseline	-	baseline (run 3/3)
 7d01a9a	architect-002	100	+12.3	47	keep	completeness	require message/data flow diagrams with happy and failure paths
 98fea54	architect-003	98	+26.3	48	keep	justification	quantify capacity requirements upfront to anchor design decisions
 7b35478	architect-001	98	+6	48	keep	structure	require at least one complete request/response example in API Surface section
+eb5ead3	architect-003	92	+20.3	49	discard	conciseness	add anti-repetition principle to improve conciseness score
