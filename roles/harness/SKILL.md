@@ -49,8 +49,10 @@ TOOL_NAME=$(printf '%s' "$INPUT" | jq -r '.tool_name // empty')
 COMMAND=$(printf '%s'  "$INPUT" | jq -r '.tool_input.command // empty')
 FILE_PATH=$(printf '%s' "$INPUT" | jq -r '.tool_input.file_path // empty')
 
-# 约束逻辑（按 TOOL_NAME 分发）
-# ...
+# 约束逻辑（使用函数组织，按 TOOL_NAME 分发）
+# fn_check_bash() { ... }
+# fn_check_edit() { ... }
+# case "$TOOL_NAME" in Bash) fn_check_bash;; Edit) fn_check_edit;; esac
 
 # 通过
 printf '{}'
