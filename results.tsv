@@ -1,40 +1,14 @@
 commit	task	score	delta	lines	status	direction	description
-dba455d	architect-001	90	baseline	42	baseline	-	baseline (run 1/3)
-dba455d	architect-001	92	baseline	42	baseline	-	baseline (run 2/3)
-dba455d	architect-001	94	baseline	42	baseline	-	baseline (run 3/3)
-dba455d	architect-002	83	baseline	42	baseline	-	baseline (run 1/3)
-dba455d	architect-002	90	baseline	42	baseline	-	baseline (run 2/3)
-dba455d	architect-002	90	baseline	42	baseline	-	baseline (run 3/3)
-dba455d	architect-003	68	baseline	42	baseline	-	baseline (run 1/3)
-dba455d	architect-003	76	baseline	42	baseline	-	baseline (run 2/3)
-dba455d	architect-003	71	baseline	42	baseline	-	baseline (run 3/3)
-62b3d21	architect-003	90	+18	45	keep	structure	add refactoring-specific guidance for migration strategies and security
-46e6492	architect-002	0	-	45	discard	structure	add comparison table format for alternatives analysis section
-7bdfca5	architect-001	96	+4	46	keep	justification	require explicit next-best alternative justification for technology choices
-7d01a9a	architect-002	100	+12.3	47	keep	completeness	require message/data flow diagrams with happy and failure paths
-98fea54	architect-003	98	+26.3	48	keep	justification	quantify capacity requirements upfront to anchor design decisions
-7b35478	architect-001	98	+6	48	keep	structure	require at least one complete request/response example in API Surface section
-eb5ead3	architect-003	92	+20.3	49	discard	conciseness	add anti-repetition principle to improve conciseness score
-33c3172	architect-001	100	+8	48	keep	conciseness	tighten cross-cutting concerns guidance, prefer bullets and tables
-33c3172	architect-001	100	+8	48	keep	structure	tighten cross-cutting concerns guidance to reduce verbosity
-7efcbf9	run-001	94	baseline	136	baseline	-	baseline
-7efcbf9	run-002	99	baseline	136	baseline	-	baseline
-7efcbf9	run-003	98	baseline	136	baseline	-	baseline
-d25745a	run-001	100	+6	150	keep	evaluation	add verification-based evaluation and negative checking to EVALUATE phase
-d25745a	run-002	100	+1	150	keep	evaluation	add verification-based evaluation and negative checking to EVALUATE phase
-d25745a	run-003	100	+2	150	keep	evaluation	add verification-based evaluation and negative checking to EVALUATE phase
-b720b49	run-001	100	+6	161	keep	risk	add risk anticipation step to PLAN phase
-b720b49	run-002	100	+1	161	keep	risk	add risk anticipation step to PLAN phase
-b720b49	run-003	100	+2	161	keep	risk	add risk anticipation step to PLAN phase
-a336b93	run-001	100	+6	136	keep	conciseness	remove ASCII flow diagram, replace with one-liner
-a336b93	run-002	100	+1	136	keep	conciseness	remove ASCII flow diagram, replace with one-liner
-a336b93	run-003	100	+2	136	keep	conciseness	remove ASCII flow diagram, replace with one-liner
-95b072e	run-001	100	+6	121	keep	conciseness	remove example code blocks from PLAN and EVALUATE sections
-95b072e	run-002	100	+1	121	keep	conciseness	remove example code blocks from PLAN and EVALUATE sections
-95b072e	run-003	100	+2	121	keep	conciseness	remove example code blocks from PLAN and EVALUATE sections
-74efe07	run-001	100	+6	111	keep	conciseness	remove user communication section, compress safety valve and principles
-74efe07	run-002	100	+1	111	keep	conciseness	remove user communication section, compress safety valve and principles
-74efe07	run-003	100	+2	111	keep	conciseness	remove user communication section, compress safety valve and principles
-5e3aca8	run-001	100	+6	109	keep	conciseness	remove redundant environment check in EXECUTE (covered by 1.4)
-5e3aca8	run-002	100	+1	109	keep	conciseness	remove redundant environment check in EXECUTE (covered by 1.4)
-5e3aca8	run-003	100	+2	109	keep	conciseness	remove redundant environment check in EXECUTE (covered by 1.4)
+cd900d8	HARNESS-001	94	baseline	169	baseline	baseline	baseline
+cd900d8	HARNESS-001	94	baseline	169	baseline	baseline	baseline
+cd900d8	HARNESS-001	92	baseline	169	baseline	baseline	baseline
+cd900d8	HARNESS-002	92	baseline	169	baseline	baseline	baseline
+cd900d8	HARNESS-002	90	baseline	169	baseline	baseline	baseline
+cd900d8	HARNESS-002	55	baseline	169	baseline	baseline	baseline
+cd900d8	HARNESS-003	83	baseline	169	baseline	baseline	baseline
+cd900d8	HARNESS-003	83	baseline	169	baseline	baseline	baseline
+cd900d8	HARNESS-003	49	baseline	169	baseline	baseline	baseline
+cd900d8	HARNESS-004	85	baseline	169	baseline	baseline	baseline
+cd900d8	HARNESS-004	98	baseline	169	baseline	baseline	baseline
+cd900d8	HARNESS-004	94	baseline	169	baseline	baseline	baseline
+35d166b	HARNESS-003	94	+22	171	keep	output-structure	add 配置安全+可逆 to output format

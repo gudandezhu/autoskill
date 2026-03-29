@@ -40,6 +40,10 @@ Priority guide:
 - [P1] frontend: Build component skeleton from semantic HTML elements (section, form, nav, article, header) not generic divs
 - [P2] frontend: Use mobile-first responsive: mobile styles as default, min-width media queries for larger screens
 
+## harness
+
+- [P1] harness: Output format must include explicit "配置安全"（showing jq incremental update command with tmp file + mv）and "可逆"（specific steps to remove/disable each constraint）sections — evaluators consistently score these as missing; adding them boosted HARNESS-003 from 71.7 to 94
+
 ## qa
 
 (no patterns yet)
