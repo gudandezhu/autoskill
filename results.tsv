@@ -17,3 +17,4 @@ cdd3ea5	HARNESS-001	98	+5	152	keep	robustness	add defensive coding requirements 
 429c633	HARNESS-004	100	+8	152	keep	output-structure	配置安全+可逆+防御编码 also improves HARNESS-004 to perfect
 6d7a5a	HARNESS-001	96	+3	145	discard	conciseness	simplify SKILL.md sections, slight score drop
 5368492	HARNESS-002	94	+15	161	keep	maintainability	require original script names in merged hook headers
+4eced32	HARNESS-003	96	+24	123	keep	structure	use function-based dispatch in hook template instead of if blocks
