@@ -91,6 +91,15 @@ exit 0
 
 **禁止**为每条规则创建独立的 hook 脚本。目标：同一事件最多一个脚本文件。
 
+合并脚本必须在文件头注释中列出所有原脚本名，每条规则用注释分隔：
+```sh
+# 合并自: pre-bash-check.sh + pre-edit-check.sh + pre-write-check.sh
+# --- 原始脚本: pre-bash-check.sh ---
+# ...该脚本的规则...
+# --- 原始脚本: pre-edit-check.sh ---
+# ...该脚本的规则...
+```
+
 #### 4.2 脚本性能要求
 
 - 脚本执行时间 < 500ms（同步 hook）
