@@ -1,0 +1,97 @@
+{
+  "metadata": {
+    "skill_name": "loop",
+    "skill_path": "roles/loop/SKILL.md",
+    "timestamp": "2026-03-28T15:05:00Z",
+    "iteration": 1,
+    "evals": ["fibonacci-task", "analysis-task", "simple-edit-task"]
+  },
+  "configurations": [
+    {
+      "name": "with_skill",
+      "runs": [
+        {
+          "eval_name": "fibonacci-task",
+          "pass_rate": 1.0,
+          "passed": 8,
+          "total": 8,
+          "time_seconds": 69.5,
+          "tokens": 13173
+        },
+        {
+          "eval_name": "analysis-task",
+          "pass_rate": 1.0,
+          "passed": 7,
+          "total": 7,
+          "time_seconds": 132.6,
+          "tokens": 680
+        },
+        {
+          "eval_name": "simple-edit-task",
+          "pass_rate": 1.0,
+          "passed": 5,
+          "total": 5,
+          "time_seconds": 65.8,
+          "tokens": 636
+        }
+      ],
+      "summary": {
+        "mean_pass_rate": 1.0,
+        "mean_time_seconds": 89.3,
+        "mean_tokens": 4830,
+        "stddev_pass_rate": 0.0,
+        "stddev_time_seconds": 30.8,
+        "stddev_tokens": 5886
+      }
+    },
+    {
+      "name": "without_skill",
+      "runs": [
+        {
+          "eval_name": "fibonacci-task",
+          "pass_rate": 0.625,
+          "passed": 5,
+          "total": 8,
+          "time_seconds": 31.2,
+          "tokens": 238
+        },
+        {
+          "eval_name": "analysis-task",
+          "pass_rate": 0.714,
+          "passed": 5,
+          "total": 7,
+          "time_seconds": 286.9,
+          "tokens": 20868
+        },
+        {
+          "eval_name": "simple-edit-task",
+          "pass_rate": 1.0,
+          "passed": 5,
+          "total": 5,
+          "time_seconds": 50.5,
+          "tokens": 675
+        }
+      ],
+      "summary": {
+        "mean_pass_rate": 0.780,
+        "mean_time_seconds": 122.9,
+        "mean_tokens": 7260,
+        "stddev_pass_rate": 0.162,
+        "stddev_time_seconds": 108.1,
+        "stddev_tokens": 9500
+      }
+    }
+  ],
+  "delta": {
+    "pass_rate": "+0.220",
+    "time_seconds": "-33.6",
+    "tokens": "-2430"
+  },
+  "analyst_notes": [
+    "with_skill 版本在所有 3 个测试中均达到 100% 通过率，而 without_skill 平均 78%",
+    "主要差距来自 'plan_phase_visible'、'evaluate_phase_visible'、'loop_structure' 三个结构化断言 — 这些是 skill 的核心价值",
+    "简单编辑任务两组表现相同（都是 100%），说明 skill 不会对简单任务造成负面影响",
+    "fibonacci 代码质量两组都很好 — skill 的价值在于结构化流程而非代码本身",
+    "analysis-task 的 without_skill 版本耗时 286s vs with_skill 132s，但分析深度相当（with_skill 有 7 个模式 vs without_skill 6 个）"
+  ]
+}

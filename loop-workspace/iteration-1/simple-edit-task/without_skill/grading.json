@@ -1,0 +1,15 @@
+{
+  "run_id": "simple-edit-task-without_skill",
+  "eval_name": "simple-edit-task",
+  "configuration": "without_skill",
+  "expectations": [
+    {"text": "修改后的 README.md 已创建", "passed": true, "evidence": "File exists at outputs/README.md"},
+    {"text": "第一行标题正确修改", "passed": true, "evidence": "Line 1: '# AutoSkill - 技能训练系统'"},
+    {"text": "其余内容保持不变", "passed": true, "evidence": "Lines 2-65 identical to original"},
+    {"text": "没有过度设计简单任务", "passed": true, "evidence": "Direct execution, no overhead. 3 tool uses (Read, Read, Write)."},
+    {"text": "执行简洁高效", "passed": true, "evidence": "Minimal tool usage: Read original, Write modified copy. Done."}
+  ],
+  "pass_rate": 1.0,
+  "total_assertions": 5,
+  "passed_assertions": 5
+}

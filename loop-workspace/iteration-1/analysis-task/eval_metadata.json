@@ -1,0 +1,49 @@
+{
+  "eval_id": 2,
+  "eval_name": "analysis-task",
+  "prompt": "分析 roles/ 目录下的所有 SKILL.md，告诉我每个 skill 的核心流程有多少个步骤，以及它们的共同模式是什么。输出一个对比表格。",
+  "assertions": [
+    {
+      "name": "output_file_created",
+      "text": "分析结果文件 analysis.md 已创建",
+      "type": "file_exists",
+      "expected": true
+    },
+    {
+      "name": "contains_table",
+      "text": "输出包含 markdown 表格",
+      "type": "content_contains",
+      "expected": "|"
+    },
+    {
+      "name": "covers_all_skills",
+      "text": "覆盖了 roles/ 下所有 skill",
+      "type": "qualitative",
+      "expected": "should mention architect, backend, frontend, qa, agile, explorer, devops, loop"
+    },
+    {
+      "name": "step_counts",
+      "text": "每个 skill 都有步骤计数",
+      "type": "qualitative",
+      "expected": "each skill should have a numerical step count mentioned"
+    },
+    {
+      "name": "common_patterns",
+      "text": "识别出共同模式",
+      "type": "qualitative",
+      "expected": "should identify at least 2-3 common patterns across skills"
+    },
+    {
+      "name": "plan_phase_visible",
+      "text": "with_skill 版本展示了明确的计划阶段和成功标准",
+      "type": "qualitative",
+      "expected": "should show structured plan with success criteria before execution"
+    },
+    {
+      "name": "evaluate_phase_visible",
+      "text": "with_skill 版本展示了评估阶段",
+      "type": "qualitative",
+      "expected": "should show evaluation against predefined success criteria"
+    }
+  ]
+}

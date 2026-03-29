@@ -1,0 +1,55 @@
+{
+  "eval_id": 1,
+  "eval_name": "fibonacci-task",
+  "prompt": "在当前目录下创建一个 Python 脚本 fibonacci.py，实现一个函数 fib(n) 计算斐波那契数列的第 n 项。要求：处理 n <= 0 的情况返回 0，n 为大数时使用迭代而非递归避免性能问题。函数需要有类型标注。",
+  "assertions": [
+    {
+      "name": "file_created",
+      "text": "fibonacci.py 文件已创建",
+      "type": "file_exists",
+      "expected": true
+    },
+    {
+      "name": "function_exists",
+      "text": "包含名为 fib 的函数",
+      "type": "content_contains",
+      "expected": "def fib"
+    },
+    {
+      "name": "type_annotations",
+      "text": "函数有类型标注",
+      "type": "content_contains",
+      "expected": "-> int"
+    },
+    {
+      "name": "handles_negative",
+      "text": "处理 n <= 0 返回 0",
+      "type": "content_contains",
+      "expected": "return 0"
+    },
+    {
+      "name": "iterative_approach",
+      "text": "使用迭代而非递归",
+      "type": "no_content_contains",
+      "expected": "fib(n - 1) + fib(n - 2)"
+    },
+    {
+      "name": "plan_phase_visible",
+      "text": "with_skill 版本展示了明确的计划阶段",
+      "type": "qualitative",
+      "expected": "should show structured plan with success criteria before execution"
+    },
+    {
+      "name": "evaluate_phase_visible",
+      "text": "with_skill 版本展示了评估阶段，逐项检查成功标准",
+      "type": "qualitative",
+      "expected": "should show evaluation against predefined success criteria"
+    },
+    {
+      "name": "loop_structure",
+      "text": "with_skill 版本遵循 Plan-Execute-Evaluate 三阶段结构",
+      "type": "qualitative",
+      "expected": "three distinct phases visible in the output"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "skill_name": "loop",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "在当前目录下创建一个 Python 脚本 fibonacci.py，实现一个函数 fib(n) 计算斐波那契数列的第 n 项。要求：处理 n <= 0 的情况返回 0，n 为大数时使用迭代而非递归避免性能问题。函数需要有类型标注。",
+      "expected_output": "一个可运行的 fibonacci.py 文件，包含 fib(n) 函数，处理了 n<=0 边界情况，使用迭代实现，有类型标注",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "分析 roles/ 目录下的所有 SKILL.md，告诉我每个 skill 的核心流程有多少个步骤，以及它们的共同模式是什么。输出一个对比表格。",
+      "expected_output": "一个 markdown 表格，列出每个 skill 的步骤数量，以及一段关于共同模式的分析文字",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "把 README.md 的第一行标题从当前内容改成 '# AutoSkill - 技能训练系统'。",
+      "expected_output": "README.md 第一行被修改为指定标题，其余内容不变",
+      "files": []
+    }
+  ]
+}

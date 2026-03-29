@@ -17,3 +17,24 @@ dba455d	architect-003	71	baseline	42	baseline	-	baseline (run 3/3)
 eb5ead3	architect-003	92	+20.3	49	discard	conciseness	add anti-repetition principle to improve conciseness score
 33c3172	architect-001	100	+8	48	keep	conciseness	tighten cross-cutting concerns guidance, prefer bullets and tables
 33c3172	architect-001	100	+8	48	keep	structure	tighten cross-cutting concerns guidance to reduce verbosity
+7efcbf9	run-001	94	baseline	136	baseline	-	baseline
+7efcbf9	run-002	99	baseline	136	baseline	-	baseline
+7efcbf9	run-003	98	baseline	136	baseline	-	baseline
+d25745a	run-001	100	+6	150	keep	evaluation	add verification-based evaluation and negative checking to EVALUATE phase
+d25745a	run-002	100	+1	150	keep	evaluation	add verification-based evaluation and negative checking to EVALUATE phase
+d25745a	run-003	100	+2	150	keep	evaluation	add verification-based evaluation and negative checking to EVALUATE phase
+b720b49	run-001	100	+6	161	keep	risk	add risk anticipation step to PLAN phase
+b720b49	run-002	100	+1	161	keep	risk	add risk anticipation step to PLAN phase
+b720b49	run-003	100	+2	161	keep	risk	add risk anticipation step to PLAN phase
+a336b93	run-001	100	+6	136	keep	conciseness	remove ASCII flow diagram, replace with one-liner
+a336b93	run-002	100	+1	136	keep	conciseness	remove ASCII flow diagram, replace with one-liner
+a336b93	run-003	100	+2	136	keep	conciseness	remove ASCII flow diagram, replace with one-liner
+95b072e	run-001	100	+6	121	keep	conciseness	remove example code blocks from PLAN and EVALUATE sections
+95b072e	run-002	100	+1	121	keep	conciseness	remove example code blocks from PLAN and EVALUATE sections
+95b072e	run-003	100	+2	121	keep	conciseness	remove example code blocks from PLAN and EVALUATE sections
+74efe07	run-001	100	+6	111	keep	conciseness	remove user communication section, compress safety valve and principles
+74efe07	run-002	100	+1	111	keep	conciseness	remove user communication section, compress safety valve and principles
+74efe07	run-003	100	+2	111	keep	conciseness	remove user communication section, compress safety valve and principles
+5e3aca8	run-001	100	+6	109	keep	conciseness	remove redundant environment check in EXECUTE (covered by 1.4)
+5e3aca8	run-002	100	+1	109	keep	conciseness	remove redundant environment check in EXECUTE (covered by 1.4)
+5e3aca8	run-003	100	+2	109	keep	conciseness	remove redundant environment check in EXECUTE (covered by 1.4)

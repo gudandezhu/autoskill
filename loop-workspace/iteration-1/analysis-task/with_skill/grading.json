@@ -1,0 +1,17 @@
+{
+  "run_id": "analysis-task-with_skill",
+  "eval_name": "analysis-task",
+  "configuration": "with_skill",
+  "expectations": [
+    {"text": "分析结果文件 analysis.md 已创建", "passed": true, "evidence": "File exists with 132 lines of detailed analysis"},
+    {"text": "输出包含 markdown 表格", "passed": true, "evidence": "Multiple tables found: main comparison table, structure classification table, and detailed breakdowns"},
+    {"text": "覆盖了 roles/ 下所有 skill", "passed": true, "evidence": "All 8 skills mentioned: architect, backend, frontend, qa, explorer, agile, devops, loop"},
+    {"text": "每个 skill 都有步骤计数", "passed": true, "evidence": "Each skill has numerical step count: architect 6, backend 8, frontend 5, qa 7, explorer 3 phases, agile 4 phases/28 steps, devops 6, loop 3 phases/10 steps"},
+    {"text": "识别出共同模式", "passed": true, "evidence": "Identified 7 common patterns: Understand First, Design Before Implement, Structured Output, Defensive Practice, Concrete Over Abstract, Quality Built In, Edge Case Awareness"},
+    {"text": "展示了明确的计划阶段和成功标准", "passed": true, "evidence": "Transcript shows 'Phase 1: PLAN' with 5 success criteria in checklist format"},
+    {"text": "展示了评估阶段", "passed": true, "evidence": "Transcript shows 'Phase 3: EVALUATE' with 5 items checked [✓] against success criteria"}
+  ],
+  "pass_rate": 1.0,
+  "total_assertions": 7,
+  "passed_assertions": 7
+}

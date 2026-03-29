@@ -1,0 +1,17 @@
+{
+  "run_id": "analysis-task-without_skill",
+  "eval_name": "analysis-task",
+  "configuration": "without_skill",
+  "expectations": [
+    {"text": "分析结果文件 analysis.md 已创建", "passed": true, "evidence": "File exists with 222 lines of comprehensive analysis"},
+    {"text": "输出包含 markdown 表格", "passed": true, "evidence": "Multiple tables including overview table, per-skill breakdowns, cross-phase comparison table"},
+    {"text": "覆盖了 roles/ 下所有 skill", "passed": true, "evidence": "All 8 skills analyzed: architect, backend, frontend, qa, explorer, agile, devops, loop"},
+    {"text": "每个 skill 都有步骤计数", "passed": true, "evidence": "Each skill has step count in overview table and detailed breakdown sections"},
+    {"text": "识别出共同模式", "passed": true, "evidence": "Identified 6 common patterns with detailed cross-skill evidence tables"},
+    {"text": "展示了明确的计划阶段和成功标准", "passed": false, "evidence": "No structured plan phase or success criteria. Agent went directly to reading files and analyzing."},
+    {"text": "展示了评估阶段", "passed": false, "evidence": "No evaluation phase. Agent completed analysis and saved file without verification against predefined criteria."}
+  ],
+  "pass_rate": 0.714,
+  "total_assertions": 7,
+  "passed_assertions": 5
+}
