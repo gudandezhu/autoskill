@@ -18,3 +18,4 @@ cdd3ea5	HARNESS-001	98	+5	152	keep	robustness	add defensive coding requirements 
 6d7a5a	HARNESS-001	96	+3	145	discard	conciseness	simplify SKILL.md sections, slight score drop
 5368492	HARNESS-002	94	+15	161	keep	maintainability	require original script names in merged hook headers
 4eced32	HARNESS-003	96	+24	123	keep	structure	use function-based dispatch in hook template instead of if blocks
+79892bb	HARNESS-001	100	+7	124	keep	maintainability	add config point centralization to hook defensive coding requirements
