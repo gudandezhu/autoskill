@@ -1,0 +1,18 @@
+{
+  "run_id": "fibonacci-task-without_skill",
+  "eval_name": "fibonacci-task",
+  "configuration": "without_skill",
+  "expectations": [
+    {"text": "fibonacci.py 文件已创建", "passed": true, "evidence": "File exists at outputs/fibonacci.py"},
+    {"text": "包含名为 fib 的函数", "passed": true, "evidence": "Line 1: def fib(n: int) -> int:"},
+    {"text": "函数有类型标注", "passed": true, "evidence": "Has n: int parameter and -> int return type, plus a: int, b: int"},
+    {"text": "处理 n <= 0 返回 0", "passed": true, "evidence": "Lines 10-11: if n <= 0: return 0"},
+    {"text": "使用迭代而非递归", "passed": true, "evidence": "Uses for loop with a, b = b, a + b. No recursive calls found."},
+    {"text": "展示了明确的计划阶段", "passed": false, "evidence": "No structured plan phase. Agent went directly to implementation."},
+    {"text": "展示了评估阶段，逐项检查成功标准", "passed": false, "evidence": "No evaluation phase. Agent created file and reported completion without checklist verification."},
+    {"text": "遵循 Plan-Execute-Evaluate 三阶段结构", "passed": false, "evidence": "No three-phase structure observed. Direct execution only."}
+  ],
+  "pass_rate": 0.625,
+  "total_assertions": 8,
+  "passed_assertions": 5
+}

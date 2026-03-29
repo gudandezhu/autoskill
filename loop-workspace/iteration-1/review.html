@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "loop", "runs": [{"id": "fibonacci-task-with_skill", "prompt": "\u5728\u5f53\u524d\u76ee\u5f55\u4e0b\u521b\u5efa\u4e00\u4e2a Python \u811a\u672c fibonacci.py\uff0c\u5b9e\u73b0\u4e00\u4e2a\u51fd\u6570 fib(n) \u8ba1\u7b97\u6590\u6ce2\u90a3\u5951\u6570\u5217\u7684\u7b2c n \u9879\u3002\u8981\u6c42\uff1a\u5904\u7406 n <= 0 \u7684\u60c5\u51b5\u8fd4\u56de 0\uff0cn \u4e3a\u5927\u6570\u65f6\u4f7f\u7528\u8fed\u4ee3\u800c\u975e\u9012\u5f52\u907f\u514d\u6027\u80fd\u95ee\u9898\u3002\u51fd\u6570\u9700\u8981\u6709\u7c7b\u578b\u6807\u6ce8\u3002", "eval_id": 1, "outputs": [{"name": "fibonacci.py", "type": "text", "content": "def fib(n: int) -> int:\n    \"\"\"\u8ba1\u7b97\u6590\u6ce2\u90a3\u5951\u6570\u5217\u7684\u7b2c n \u9879\u3002\n\n    \u4f7f\u7528\u8fed\u4ee3\u65b9\u5f0f\u5b9e\u73b0\uff0c\u907f\u514d\u9012\u5f52\u5bfc\u81f4\u7684\u6808\u6ea2\u51fa\u548c\u6027\u80fd\u95ee\u9898\u3002\n\n    Args:\n        n: \u6590\u6ce2\u90a3\u5951\u6570\u5217\u7684\u9879\u6570\uff08\u4ece 1 \u5f00\u59cb\u8ba1\u6570\uff09\u3002\n\n    Returns:\n        \u7b2c n \u9879\u6590\u6ce2\u90a3\u5951\u6570\u3002n <= 0 \u65f6\u8fd4\u56de 0\u3002\n    \"\"\"\n    if n <= 0:\n        return 0\n    if n == 1 or n == 2:\n        return 1\n\n    prev: int = 1\n    curr: int = 1\n    for _ in range(3, n + 1):\n        prev, curr = curr, prev + curr\n    return curr\n\n\nif __name__ == \"__main__\":\n    # \u57fa\u672c\u9a8c\u8bc1\n    test_cases: list[tuple[int, int]] = [\n        (-1, 0),\n        (0, 0),\n        (1, 1),\n        (2, 1),\n        (3, 2),\n        (5, 5),\n        (10, 55),\n        (20, 6765),\n        (50, 12586269025),\n    ]\n\n    for n, expected in test_cases:\n        result = fib(n)\n        status = \"PASS\" if result == expected else \"FAIL\"\n        print(f\"fib({n}) = {result} (expected {expected}) [{status}]\")\n"}], "grading": {"run_id": "fibonacci-task-with_skill", "eval_name": "fibonacci-task", "configuration": "with_skill", "expectations": [{"text": "fibonacci.py \u6587\u4ef6\u5df2\u521b\u5efa", "passed": true, "evidence": "File exists at outputs/fibonacci.py"}, {"text": "\u5305\u542b\u540d\u4e3a fib \u7684\u51fd\u6570", "passed": true, "evidence": "Line 1: def fib(n: int) -> int:"}, {"text": "\u51fd\u6570\u6709\u7c7b\u578b\u6807\u6ce8", "passed": true, "evidence": "Has n: int parameter and -> int return type, plus internal prev: int, curr: int"}, {"text": "\u5904\u7406 n <= 0 \u8fd4\u56de 0", "passed": true, "evidence": "Lines 12-13: if n <= 0: return 0"}, {"text": "\u4f7f\u7528\u8fed\u4ee3\u800c\u975e\u9012\u5f52", "passed": true, "evidence": "Uses for loop with prev, curr = curr, prev + curr. No recursive calls found."}, {"text": "\u5c55\u793a\u4e86\u660e\u786e\u7684\u8ba1\u5212\u9636\u6bb5", "passed": true, "evidence": "Transcript shows 'Phase 1: PLAN' with 1.1 \u7406\u89e3\u4efb\u52a1, 1.2 \u5b9a\u4e49\u6210\u529f\u6807\u51c6 (7 checklist items), 1.3 \u62c6\u89e3\u5b50\u4efb\u52a1"}, {"text": "\u5c55\u793a\u4e86\u8bc4\u4f30\u9636\u6bb5\uff0c\u9010\u9879\u68c0\u67e5\u6210\u529f\u6807\u51c6", "passed": true, "evidence": "Transcript shows 'Phase 3: EVALUATE' with 7 items checked [\u2713] against the success criteria defined in PLAN"}, {"text": "\u9075\u5faa Plan-Execute-Evaluate \u4e09\u9636\u6bb5\u7ed3\u6784", "passed": true, "evidence": "Three distinct phases clearly labeled: Phase 1 PLAN, Phase 2 EXECUTE, Phase 3 EVALUATE"}], "pass_rate": 1.0, "total_assertions": 8, "passed_assertions": 8}}, {"id": "fibonacci-task-without_skill", "prompt": "\u5728\u5f53\u524d\u76ee\u5f55\u4e0b\u521b\u5efa\u4e00\u4e2a Python \u811a\u672c fibonacci.py\uff0c\u5b9e\u73b0\u4e00\u4e2a\u51fd\u6570 fib(n) \u8ba1\u7b97\u6590\u6ce2\u90a3\u5951\u6570\u5217\u7684\u7b2c n \u9879\u3002\u8981\u6c42\uff1a\u5904\u7406 n <= 0 \u7684\u60c5\u51b5\u8fd4\u56de 0\uff0cn \u4e3a\u5927\u6570\u65f6\u4f7f\u7528\u8fed\u4ee3\u800c\u975e\u9012\u5f52\u907f\u514d\u6027\u80fd\u95ee\u9898\u3002\u51fd\u6570\u9700\u8981\u6709\u7c7b\u578b\u6807\u6ce8\u3002", "eval_id": 1, "outputs": [{"name": "fibonacci.py", "type": "text", "content": "def fib(n: int) -> int:\n    \"\"\"Calculate the nth Fibonacci number using iteration.\n\n    Args:\n        n: The index in the Fibonacci sequence (1-indexed).\n\n    Returns:\n        The nth Fibonacci number. Returns 0 for n <= 0.\n    \"\"\"\n    if n <= 0:\n        return 0\n    if n == 1:\n        return 1\n\n    a: int = 0\n    b: int = 1\n    for _ in range(2, n + 1):\n        a, b = b, a + b\n    return b\n\n\nif __name__ == \"__main__\":\n    test_cases = [0, 1, 2, 3, 5, 10, 20, 50]\n    for n in test_cases:\n        print(f\"fib({n}) = {fib(n)}\")\n"}], "grading": {"run_id": "fibonacci-task-without_skill", "eval_name": "fibonacci-task", "configuration": "without_skill", "expectations": [{"text": "fibonacci.py \u6587\u4ef6\u5df2\u521b\u5efa", "passed": true, "evidence": "File exists at outputs/fibonacci.py"}, {"text": "\u5305\u542b\u540d\u4e3a fib \u7684\u51fd\u6570", "passed": true, "evidence": "Line 1: def fib(n: int) -> int:"}, {"text": "\u51fd\u6570\u6709\u7c7b\u578b\u6807\u6ce8", "passed": true, "evidence": "Has n: int parameter and -> int return type, plus a: int, b: int"}, {"text": "\u5904\u7406 n <= 0 \u8fd4\u56de 0", "passed": true, "evidence": "Lines 10-11: if n <= 0: return 0"}, {"text": "\u4f7f\u7528\u8fed\u4ee3\u800c\u975e\u9012\u5f52", "passed": true, "evidence": "Uses for loop with a, b = b, a + b. No recursive calls found."}, {"text": "\u5c55\u793a\u4e86\u660e\u786e\u7684\u8ba1\u5212\u9636\u6bb5", "passed": false, "evidence": "No structured plan phase. Agent went directly to implementation."}, {"text": "\u5c55\u793a\u4e86\u8bc4\u4f30\u9636\u6bb5\uff0c\u9010\u9879\u68c0\u67e5\u6210\u529f\u6807\u51c6", "passed": false, "evidence": "No evaluation phase. Agent created file and reported completion without checklist verification."}, {"text": "\u9075\u5faa Plan-Execute-Evaluate \u4e09\u9636\u6bb5\u7ed3\u6784", "passed": false, "evidence": "No three-phase structure observed. Direct execution only."}], "pass_rate": 0.625, "total_assertions": 8, "passed_assertions": 5}}, {"id": "analysis-task-with_skill", "prompt": "\u5206\u6790 roles/ \u76ee\u5f55\u4e0b\u7684\u6240\u6709 SKILL.md\uff0c\u544a\u8bc9\u6211\u6bcf\u4e2a skill \u7684\u6838\u5fc3\u6d41\u7a0b\u6709\u591a\u5c11\u4e2a\u6b65\u9aa4\uff0c\u4ee5\u53ca\u5b83\u4eec\u7684\u5171\u540c\u6a21\u5f0f\u662f\u4ec0\u4e48\u3002\u8f93\u51fa\u4e00\u4e2a\u5bf9\u6bd4\u8868\u683c\u3002", "eval_id": 2, "outputs": [{"name": "analysis.md", "type": "text", "content": "# SKILL.md \u6838\u5fc3\u6d41\u7a0b\u5bf9\u6bd4\u5206\u6790\n\n## \u5bf9\u6bd4\u8868\u683c\n\n| Skill | \u6838\u5fc3\u6d41\u7a0b\u6b65\u9aa4\u6570 | \u6d41\u7a0b\u7ed3\u6784 | \u6d41\u7a0b\u7c7b\u578b |\n|-------|--------------|---------|---------|\n| **architect** | 6 \u6b65 | \u7ebf\u6027\u987a\u5e8f\uff08\u7406\u89e3 -> \u679a\u4e3e\u65b9\u6848 -> \u9009\u62e9 -> \u7ec6\u5316 -> \u6a2a\u5207\u5173\u6ce8\u70b9 -> \u8fc1\u79fb\uff09 | \u8bbe\u8ba1\u5bfc\u5411 |\n| **backend** | 8 \u6b65 | \u7ebf\u6027\u987a\u5e8f\uff08\u89e3\u6790 -> \u8bbe\u8ba1\u7b7e\u540d -> \u9a8c\u8bc1 -> \u9519\u8bef\u5904\u7406 -> \u51fd\u6570\u805a\u7126 -> \u7c7b\u578b -> DB -> \u4f18\u5316\uff09 | \u5b9e\u73b0\u5bfc\u5411 |\n| **frontend** | 5 \u6b65 | \u7ebf\u6027\u987a\u5e8f\uff08\u72b6\u6001\u8bc6\u522b -> \u7ec4\u4ef6API -> HTML\u5b9e\u73b0 -> \u53ef\u8bbf\u95ee\u6027 -> \u6d4b\u8bd5\uff09 | \u5b9e\u73b0\u5bfc\u5411 |\n| **qa** | 7 \u6b65 | \u7ebf\u6027\u987a\u5e8f\uff08\u8bc6\u522b\u5bf9\u8c61 -> \u547d\u540d -> \u7ed3\u6784 -> \u8986\u76d6\u8303\u56f4 -> \u72ec\u7acb\u6027 -> \u96c6\u6210\u6d4b\u8bd5 -> Bug\u62a5\u544a\uff09 | \u9a8c\u8bc1\u5bfc\u5411 |\n| **explorer** | 3 \u9636\u6bb5\uff08Phase \u5185\u542b\u5b50\u6b65\u9aa4\uff09 | \u8fed\u4ee3\u5faa\u73af\uff08Clarify -> Explore[\u8fed\u4ee3] -> Synthesize\uff09 | \u63a2\u7d22\u5bfc\u5411 |\n| **agile** | 4 \u9636\u6bb5\uff08\u5171 28 \u6b65\uff09 | \u987a\u5e8f\u9636\u6bb5\uff08Architect[6] -> Backend[8] -> Frontend[7] -> QA[7]\uff09 | \u5168\u6d41\u7a0b\u5bfc\u5411 |\n| **devops** | 6 \u6b65 | \u7ebf\u6027\u987a\u5e8f\uff08\u7406\u89e3\u76ee\u6807 -> \u53ef\u590d\u73b0 -> \u5065\u5eb7\u68c0\u67e5 -> \u6700\u5c0f\u6743\u9650 -> \u56de\u6eda -> \u53ef\u89c2\u6d4b\uff09 | \u57fa\u7840\u8bbe\u65bd\u5bfc\u5411 |\n| **loop** | 3 \u9636\u6bb5\uff08\u5171 10 \u6b65\uff09 | \u8fed\u4ee3\u5faa\u73af\uff08Plan[4] -> Execute[4] -> Evaluate[2] -> \u53ef\u80fd\u56de\u5230Plan\uff09 | \u5143\u6d41\u7a0b\u5bfc\u5411 |\n\n## \u6b65\u9aa4\u6570\u8be6\u7ec6\u62c6\u89e3\n\n### architect (6 \u6b65)\n1. \u7406\u89e3\u9700\u6c42\uff0c\u91cf\u5316\u5bb9\u91cf\u8981\u6c42\n2. \u679a\u4e3e 2-3 \u79cd\u65b9\u6848\u5e76\u5206\u6790\u6743\u8861\n3. \u9009\u62e9\u63a8\u8350\u65b9\u6848\u5e76\u7ed9\u51fa\u7406\u7531\n4. \u6307\u5b9a\u5177\u4f53\u6570\u636e\u7c7b\u578b\u3001\u6a21\u5f0f\u548c\u534f\u8bae\n5. \u5904\u7406\u6a2a\u5207\u5173\u6ce8\u70b9\uff08\u9519\u8bef\u3001\u5b89\u5168\u3001\u53ef\u6269\u5c55\u3001\u76d1\u63a7\uff09\n6. \u9488\u5bf9\u91cd\u6784/\u8fc1\u79fb\u6bd4\u8f83\u7b56\u7565\n\n### backend (8 \u6b65)\n1. \u89e3\u6790\u9700\u6c42\uff0c\u8bc6\u522b\u8f93\u5165/\u8f93\u51fa/\u7ea6\u675f/\u8fb9\u754c\n2. \u4f18\u5148\u8bbe\u8ba1\u51fd\u6570/\u670d\u52a1\u7b7e\u540d\n3. \u5728\u4e1a\u52a1\u903b\u8f91\u4e4b\u524d\u5b9e\u73b0\u8f93\u5165\u9a8c\u8bc1\n4. \u663e\u5f0f\u5904\u7406\u6240\u6709\u9519\u8bef\u60c5\u51b5\n5. \u4fdd\u6301\u51fd\u6570\u805a\u7126\uff08\u5355\u4e00\u804c\u8d23\uff09\n6. \u4f7f\u7528\u5177\u4f53 TypeScript \u7c7b\u578b\uff0c\u7981\u6b62 any\n7. \u6570\u636e\u5e93\u4efb\u52a1\u5305\u542b CREATE TABLE\n8. \u67e5\u8be2\u4f18\u5316\u5305\u542b EXPLAIN ANALYZE \u5bf9\u6bd4\n\n### frontend (5 \u6b65)\n1. \u8bc6\u522b\u6240\u6709\u72b6\u6001\uff08\u9ed8\u8ba4/\u52a0\u8f7d/\u9519\u8bef/\u7a7a/\u6210\u529f\uff09\n2. \u8bbe\u8ba1\u7ec4\u4ef6 API\uff08props/events/slots\uff09\n3. \u8bed\u4e49 HTML \u4f18\u5148\uff0c\u518d\u6dfb\u52a0\u4ea4\u4e92\u548c\u6837\u5f0f\n4. \u786e\u4fdd\u952e\u76d8\u53ef\u8bbf\u95ee\u6027\n5. \u6d4b\u8bd5\u4e0d\u540c\u5185\u5bb9\u957f\u5ea6\n\n### qa (7 \u6b65)\n1. \u8bc6\u522b\u6d4b\u8bd5\u5bf9\u8c61\uff08\u9700\u6c42/\u8fb9\u754c/\u9519\u8bef\u8def\u5f84/\u96c6\u6210\u70b9\uff09\n2. \u6309\u9884\u671f\u884c\u4e3a\u547d\u540d\u6d4b\u8bd5\u7528\u4f8b\n3. \u6784\u5efa\u6d4b\u8bd5\u7ed3\u6784\uff1aArrange -> Act -> Assert\n4. \u8986\u76d6\uff1a\u6b63\u5e38\u8def\u5f84/\u8fb9\u754c\u503c/\u65e0\u6548\u8f93\u5165/\u5e76\u53d1\n5. \u786e\u4fdd\u6d4b\u8bd5\u72ec\u7acb\u4e14\u786e\u5b9a\u6027\n6. \u96c6\u6210\u6d4b\u8bd5\u5305\u542b\u5177\u4f53\u8bf7\u6c42/\u54cd\u5e94\u793a\u4f8b\n7. Bug\u62a5\u544a\u5305\u542b\u590d\u73b0\u6b65\u9aa4/\u73af\u5883/\u4e25\u91cd\u5ea6\n\n### explorer (3 \u9636\u6bb5)\n- **Phase 1 Clarify**: 3-5 \u4e2a\u805a\u7126\u95ee\u9898\uff08\u4e00\u6b21\u95ee 1-2 \u4e2a\uff09\n- **Phase 2 Explore**: 2-4 \u8f6e\u8fed\u4ee3\u63a2\u7d22\uff08\u6bcf\u8f6e\uff1a\u7ed3\u6784\u5316\u5206\u6790 + \u975e\u663e\u800c\u6613\u89c1\u7684\u89d2\u5ea6 + \u7528\u6237\u53cd\u9988\uff09\n- **Phase 3 Synthesize**: \u603b\u7ed3 -> \u6821\u6b63 -> \u751f\u6210\u6587\u6863\n\n### agile (4 \u9636\u6bb5\uff0c28 \u6b65)\n- **Phase 1 Architect** (6 \u6b65): \u8bbe\u8ba1\u9636\u6bb5\n- **Phase 2 Backend** (8 \u6b65): API \u5b9e\u73b0\u9636\u6bb5\n- **Phase 3 Frontend** (7 \u6b65): UI \u6784\u5efa\u9636\u6bb5\n- **Phase 4 QA** (7 \u6b65): \u6d4b\u8bd5\u9a8c\u8bc1\u9636\u6bb5\n\n### devops (6 \u6b65)\n1. \u7406\u89e3\u90e8\u7f72\u76ee\u6807\u548c\u7ea6\u675f\n2. \u786e\u4fdd\u53ef\u590d\u73b0\u6784\u5efa\n3. \u6dfb\u52a0\u5065\u5eb7\u68c0\u67e5\u548c\u5c31\u7eea\u63a2\u9488\n4. \u6700\u5c0f\u6743\u9650\u539f\u5219\n5. \u5b9e\u73b0\u56de\u6eda\u80fd\u529b\n6. \u4f7f\u57fa\u7840\u8bbe\u65bd\u53ef\u89c2\u6d4b\n\n### loop (3 \u9636\u6bb5\uff0c10 \u6b65)\n- **PLAN** (4 \u6b65): \u7406\u89e3\u4efb\u52a1\u3001\u5b9a\u4e49\u6210\u529f\u6807\u51c6\u3001\u62c6\u89e3\u5b50\u4efb\u52a1\u3001\u8bb0\u5f55\u8fed\u4ee3\u4fe1\u606f\n- **EXECUTE** (4 \u6b65): \u9010\u6b65\u6267\u884c\u3001\u66f4\u65b0\u8fdb\u5ea6\u3001\u8bb0\u5f55\u65b0\u4fe1\u606f\u3001\u5904\u7406\u963b\u585e\n- **EVALUATE** (2 \u6b65): \u9010\u9879\u68c0\u67e5\u3001\u5faa\u73af\u51b3\u7b56\n\n## \u5171\u540c\u6a21\u5f0f\n\n### 1. \"\u5148\u7406\u89e3\u518d\u52a8\u624b\"\uff08Understand First\uff09\n\u6240\u6709 skill \u90fd\u5c06\"\u7406\u89e3\u9700\u6c42/\u4e0a\u4e0b\u6587\"\u4f5c\u4e3a\u7b2c\u4e00\u6b65\u3002\u65e0\u8bba\u662f architect \u7684\"\u7406\u89e3\u9700\u6c42\"\uff0cbackend \u7684\"\u89e3\u6790\u9700\u6c42\"\uff0c\u8fd8\u662f devops \u7684\"\u7406\u89e3\u90e8\u7f72\u76ee\u6807\"\uff0c\u6838\u5fc3\u90fd\u662f\u5148\u641e\u6e05\u695a\u8981\u505a\u4ec0\u4e48\u3002\n\n### 2. \"\u8bbe\u8ba1\u5148\u884c\"\uff08Design Before Implement\uff09\n\u5927\u591a\u6570 skill \u5728\u5b9e\u9645\u6267\u884c\u524d\u90fd\u6709\u4e00\u4e2a\u8bbe\u8ba1/\u89c4\u5212\u6b65\u9aa4\uff1a\n- architect: \u679a\u4e3e\u65b9\u6848\u3001\u9009\u62e9\u65b9\u6848\n- backend: \u8bbe\u8ba1\u51fd\u6570\u7b7e\u540d\n- frontend: \u8bbe\u8ba1\u7ec4\u4ef6 API\n- loop: \u5b9a\u4e49\u6210\u529f\u6807\u51c6\u3001\u62c6\u89e3\u5b50\u4efb\u52a1\n\n### 3. \"\u7ed3\u6784\u5316\u8f93\u51fa\"\uff08Structured Output\uff09\n\u6bcf\u4e2a skill \u90fd\u5b9a\u4e49\u4e86\u660e\u786e\u7684\u8f93\u51fa\u683c\u5f0f\u3002architect \u8981\u6c42\u7279\u5b9a\u7ae0\u8282\u7684 markdown\uff0cbackend \u8981\u6c42 JSON \u54cd\u5e94\u683c\u5f0f\uff0cfrontend \u8981\u6c42\u5904\u7406\u6240\u6709\u72b6\u6001\uff0cqa \u8981\u6c42\u7279\u5b9a\u547d\u540d\u89c4\u8303\u3002\n\n### 4. \"\u9632\u5fa1\u6027\u5b9e\u8df5\"\uff08Defensive Practice\uff09\n\u591a\u4e2a skill \u5f3a\u8c03\u9632\u5fa1\u6027\u7f16\u7801\uff1a\n- backend: \"Never trust the caller\"\u3001\u8f93\u5165\u9a8c\u8bc1\n- frontend: \u5904\u7406\u6240\u6709\u72b6\u6001\uff08\u52a0\u8f7d/\u9519\u8bef/\u7a7a\uff09\n- devops: \u6700\u5c0f\u6743\u9650\u3001\u56de\u6eda\u80fd\u529b\n- qa: \u8986\u76d6\u8fb9\u754c\u503c\u548c\u9519\u8bef\u8def\u5f84\n\n### 5. \"\u5177\u4f53\u4f18\u4e8e\u62bd\u8c61\"\uff08Concrete Over Abstract\uff09\n\u51e0\u4e4e\u6240\u6709 skill \u90fd\u53cd\u5bf9\u6a21\u7cca\u7684\u62bd\u8c61\uff1a\n- architect: \"No vague abstractions\"\uff0c\u8981\u5177\u4f53\u7684\u6570\u636e\u7c7b\u578b\n- backend: \"Never use any\"\uff0c\u5b9a\u4e49\u6240\u6709\u63a5\u53e3\n- qa: \"Assertions are specific\"\n- devops: \"No hardcoded values\"\uff0c\u4f46\u8981\u6c42\u53c2\u6570\u5316\n\n### 6. \"\u8d28\u91cf\u5185\u5efa\"\uff08Quality Built In\uff09\n\u8d28\u91cf\u4e0d\u662f\u4e8b\u540e\u68c0\u67e5\uff0c\u800c\u662f\u6d41\u7a0b\u7684\u4e00\u90e8\u5206\uff1a\n- qa: \u6d4b\u8bd5\u547d\u540d\u89c4\u8303\u3001\u8986\u76d6\u7b56\u7565\n- frontend: \u53ef\u8bbf\u95ee\u6027\u662f\u5fc5\u987b\u7684\n- devops: \u53ef\u89c2\u6d4b\u6027\u662f\u57fa\u7840\u8bbe\u65bd\u7684\u4e00\u90e8\u5206\n- loop: \u5728\u8ba1\u5212\u9636\u6bb5\u5c31\u9501\u5b9a\u8bc4\u4f30\u6807\u51c6\n\n### 7. \"\u5173\u6ce8\u8fb9\u754c\u60c5\u51b5\"\uff08Edge Case Awareness\uff09\n\u6240\u6709 skill \u90fd\u5173\u6ce8\u8fb9\u754c\u60c5\u51b5\u7684\u5904\u7406\u65b9\u5f0f\uff1a\n- architect: \u8003\u8651\u5931\u8d25\u6a21\u5f0f\n- backend: \u5904\u7406\u77ac\u65f6\u6545\u969c\u548c\u975e\u6062\u590d\u6027\u6545\u969c\n- frontend: \u6d4b\u8bd5\u4e0d\u540c\u5185\u5bb9\u957f\u5ea6\n- qa: \u8fb9\u754c\u503c\u3001\u65e0\u6548\u8f93\u5165\u3001\u5e76\u53d1\u573a\u666f\n\n## \u7ed3\u6784\u5206\u7c7b\n\n\u6839\u636e\u6d41\u7a0b\u7ed3\u6784\uff0c8 \u4e2a skill \u53ef\u5206\u4e3a\u4e09\u7c7b\uff1a\n\n| \u7c7b\u578b | \u7279\u5f81 | Skill |\n|------|------|-------|\n| **\u7ebf\u6027\u6d41\u7a0b** | \u6b65\u9aa4\u6309\u56fa\u5b9a\u987a\u5e8f\u6267\u884c\uff0c\u4e00\u6b65\u63a5\u4e00\u6b65 | architect, backend, frontend, qa, devops |\n| **\u8fed\u4ee3\u6d41\u7a0b** | \u5305\u542b\u5faa\u73af/\u8fed\u4ee3\u7684\u9636\u6bb5\u7ed3\u6784 | explorer, loop |\n| **\u7ec4\u5408\u6d41\u7a0b** | \u7ec4\u5408\u591a\u4e2a skill \u7684\u7ebf\u6027\u6d41\u7a0b | agile |\n\n## \u603b\u7ed3\n\n8 \u4e2a skill \u7684\u6838\u5fc3\u6d41\u7a0b\u6b65\u9aa4\u6570\u4ece 5 \u5230 28 \u4e0d\u7b49\uff0c\u4f46\u5b83\u4eec\u5171\u4eab\u4e00\u4e2a\u6838\u5fc3\u7406\u5ff5\uff1a**\u5148\u60f3\u6e05\u695a\uff08\u7406\u89e3/\u8bbe\u8ba1\uff09\uff0c\u518d\u52a8\u624b\u505a\uff08\u5b9e\u73b0/\u6267\u884c\uff09\uff0c\u5e76\u786e\u4fdd\u8d28\u91cf\uff08\u9a8c\u8bc1/\u9632\u5fa1\uff09**\u3002\u8fd9\u662f\u8d2f\u7a7f\u6240\u6709 skill \u7684\u5143\u6a21\u5f0f\uff0c\u4e0e loop skill \u81ea\u8eab\u7684 Plan-Execute-Evaluate \u5faa\u73af\u9ad8\u5ea6\u4e00\u81f4\u3002\n"}], "grading": {"run_id": "analysis-task-with_skill", "eval_name": "analysis-task", "configuration": "with_skill", "expectations": [{"text": "\u5206\u6790\u7ed3\u679c\u6587\u4ef6 analysis.md \u5df2\u521b\u5efa", "passed": true, "evidence": "File exists with 132 lines of detailed analysis"}, {"text": "\u8f93\u51fa\u5305\u542b markdown \u8868\u683c", "passed": true, "evidence": "Multiple tables found: main comparison table, structure classification table, and detailed breakdowns"}, {"text": "\u8986\u76d6\u4e86 roles/ \u4e0b\u6240\u6709 skill", "passed": true, "evidence": "All 8 skills mentioned: architect, backend, frontend, qa, explorer, agile, devops, loop"}, {"text": "\u6bcf\u4e2a skill \u90fd\u6709\u6b65\u9aa4\u8ba1\u6570", "passed": true, "evidence": "Each skill has numerical step count: architect 6, backend 8, frontend 5, qa 7, explorer 3 phases, agile 4 phases/28 steps, devops 6, loop 3 phases/10 steps"}, {"text": "\u8bc6\u522b\u51fa\u5171\u540c\u6a21\u5f0f", "passed": true, "evidence": "Identified 7 common patterns: Understand First, Design Before Implement, Structured Output, Defensive Practice, Concrete Over Abstract, Quality Built In, Edge Case Awareness"}, {"text": "\u5c55\u793a\u4e86\u660e\u786e\u7684\u8ba1\u5212\u9636\u6bb5\u548c\u6210\u529f\u6807\u51c6", "passed": true, "evidence": "Transcript shows 'Phase 1: PLAN' with 5 success criteria in checklist format"}, {"text": "\u5c55\u793a\u4e86\u8bc4\u4f30\u9636\u6bb5", "passed": true, "evidence": "Transcript shows 'Phase 3: EVALUATE' with 5 items checked [\u2713] against success criteria"}], "pass_rate": 1.0, "total_assertions": 7, "passed_assertions": 7}}, {"id": "analysis-task-without_skill", "prompt": "\u5206\u6790 roles/ \u76ee\u5f55\u4e0b\u7684\u6240\u6709 SKILL.md\uff0c\u544a\u8bc9\u6211\u6bcf\u4e2a skill \u7684\u6838\u5fc3\u6d41\u7a0b\u6709\u591a\u5c11\u4e2a\u6b65\u9aa4\uff0c\u4ee5\u53ca\u5b83\u4eec\u7684\u5171\u540c\u6a21\u5f0f\u662f\u4ec0\u4e48\u3002\u8f93\u51fa\u4e00\u4e2a\u5bf9\u6bd4\u8868\u683c\u3002", "eval_id": 2, "outputs": [{"name": "analysis.md", "type": "text", "content": "# Skill \u6838\u5fc3\u6d41\u7a0b\u5bf9\u6bd4\u5206\u6790\n\n## \u6982\u89c8\n\n\u5728 `roles/` \u76ee\u5f55\u4e0b\u5171\u6709 **8 \u4e2a skill**\uff0c\u6bcf\u4e2a skill \u7684 SKILL.md \u90fd\u5b9a\u4e49\u4e86\u4e00\u4e2a\u9762\u5411\u7279\u5b9a\u89d2\u8272\u7684\u7ed3\u6784\u5316\u5de5\u4f5c\u6d41\u7a0b\u3002\u4ee5\u4e0b\u5bf9\u6bcf\u4e2a skill \u7684\u6838\u5fc3\u6d41\u7a0b\uff08Process / Workflow / Core Process\uff09\u8fdb\u884c\u6b65\u9aa4\u7edf\u8ba1\u548c\u6a21\u5f0f\u5206\u6790\u3002\n\n---\n\n## \u6b65\u9aa4\u6570\u91cf\u7edf\u8ba1\n\n| Skill | \u6d41\u7a0b\u540d\u79f0 | \u6838\u5fc3\u6b65\u9aa4\u6570 | \u9636\u6bb5\u5212\u5206 |\n|-------|----------|-----------|---------|\n| **architect** | Process | 6 | \u65e0\u663e\u5f0f\u9636\u6bb5\uff0c6 \u4e2a\u8fde\u7eed\u6b65\u9aa4 |\n| **backend** | Process | 8 | \u65e0\u663e\u5f0f\u9636\u6bb5\uff0c8 \u4e2a\u8fde\u7eed\u6b65\u9aa4 |\n| **frontend** | Process | 5 | \u65e0\u663e\u5f0f\u9636\u6bb5\uff0c5 \u4e2a\u8fde\u7eed\u6b65\u9aa4 |\n| **qa** | Process | 7 | \u65e0\u663e\u5f0f\u9636\u6bb5\uff0c7 \u4e2a\u8fde\u7eed\u6b65\u9aa4 |\n| **explorer** | Core Process | 3 (\u542b\u5b50\u6b65\u9aa4) | 3 \u4e2a\u663e\u5f0f\u9636\u6bb5\uff1aClarify (3-5 questions) -> Explore (2-4 rounds) -> Synthesize (3 steps) |\n| **agile** | Workflow | 4 phases (23 sub-steps) | 4 \u4e2a\u663e\u5f0f\u9636\u6bb5\uff1aDesign (6) -> Implement API (8) -> Build UI (7) -> Test (7)\uff0c\u5171\u7ea6 28 \u5b50\u6b65\u9aa4 |\n| **devops** | Process | 6 | \u65e0\u663e\u5f0f\u9636\u6bb5\uff0c6 \u4e2a\u8fde\u7eed\u6b65\u9aa4 |\n| **loop** | \u5faa\u73af\u6d41\u7a0b | 3 | 3 \u4e2a\u663e\u5f0f\u9636\u6bb5\uff1aPLAN (4 sub-steps) -> EXECUTE (4 sub-steps) -> EVALUATE (2 sub-steps) |\n\n---\n\n## \u8be6\u7ec6\u6b65\u9aa4\u5206\u89e3\n\n### architect (6 \u6b65)\n\n1. \u7406\u89e3\u9700\u6c42\uff0c\u91cf\u5316\u5bb9\u91cf\u6307\u6807\n2. \u5217\u4e3e 2-3 \u79cd\u65b9\u6848\u53ca\u6743\u8861\n3. \u9009\u62e9\u63a8\u8350\u65b9\u6848\u5e76\u7ed9\u51fa\u7406\u7531\n4. \u6307\u5b9a\u5177\u4f53\u7684\u6570\u636e\u7c7b\u578b\u3001\u6a21\u5f0f\u548c\u534f\u8bae\n5. \u5904\u7406\u6a2a\u5207\u5173\u6ce8\u70b9\uff08\u9519\u8bef\u5904\u7406\u3001\u5b89\u5168\u3001\u53ef\u6269\u5c55\u6027\u3001\u76d1\u63a7\uff09\n6. \u91cd\u6784/\u8fc1\u79fb\uff1a\u6bd4\u8f83\u81f3\u5c11 2 \u79cd\u8fc1\u79fb\u7b56\u7565\n\n### backend (8 \u6b65)\n\n1. \u89e3\u6790\u9700\u6c42\uff0c\u8bc6\u522b\u8f93\u5165/\u8f93\u51fa/\u7ea6\u675f/\u8fb9\u754c\n2. \u5148\u8bbe\u8ba1\u51fd\u6570/\u670d\u52a1\u7b7e\u540d\n3. \u5728\u4e1a\u52a1\u903b\u8f91\u524d\u5b9e\u73b0\u8f93\u5165\u9a8c\u8bc1\n4. \u663e\u5f0f\u5904\u7406\u6240\u6709\u9519\u8bef\u60c5\u51b5\n5. \u4fdd\u6301\u51fd\u6570\u5355\u4e00\u804c\u8d23\uff0c\u4f7f\u7528\u65e9\u8fd4\u56de\n6. \u4f7f\u7528\u5177\u4f53 TypeScript \u7c7b\u578b\uff0c\u7981\u6b62 `any`\n7. \u6570\u636e\u5e93\u4efb\u52a1\uff1a\u5305\u542b CREATE TABLE\n8. \u67e5\u8be2\u4f18\u5316\uff1a\u5305\u542b EXPLAIN ANALYZE \u524d\u540e\u5bf9\u6bd4\n\n### frontend (5 \u6b65)\n\n1. \u8bc6\u522b\u6240\u6709\u72b6\u6001\uff1adefault, loading, error, empty, success\n2. \u8bbe\u8ba1\u7ec4\u4ef6 API\uff08props, events, slots\uff09\n3. \u7528\u8bed\u4e49\u5316 HTML \u5b9e\u73b0\u9aa8\u67b6\uff0c\u518d\u52a0\u4ea4\u4e92\u548c\u6837\u5f0f\n4. \u786e\u4fdd\u6240\u6709\u4ea4\u4e92\u5143\u7d20\u7684\u952e\u76d8\u53ef\u8bbf\u95ee\u6027\n5. \u6d4b\u8bd5\u4e0d\u540c\u5185\u5bb9\u957f\u5ea6\n\n### qa (7 \u6b65)\n\n1. \u786e\u5b9a\u6d4b\u8bd5\u8303\u56f4\uff1a\u9700\u6c42\u3001\u8fb9\u754c\u3001\u9519\u8bef\u8def\u5f84\u3001\u96c6\u6210\u70b9\n2. \u6309\u9884\u671f\u884c\u4e3a\u547d\u540d\u6bcf\u4e2a\u6d4b\u8bd5\u7528\u4f8b\n3. \u7ed3\u6784\u5316\u6d4b\u8bd5\uff1aArrange -> Act -> Assert\n4. \u8986\u76d6\uff1ahappy path\u3001\u8fb9\u754c\u503c\u3001\u65e0\u6548\u8f93\u5165\u3001\u5e76\u53d1\u573a\u666f\n5. \u786e\u4fdd\u6d4b\u8bd5\u72ec\u7acb\u4e14\u786e\u5b9a\u6027\n6. \u96c6\u6210\u6d4b\u8bd5\uff1a\u5305\u542b\u5177\u4f53\u7684\u8bf7\u6c42/\u54cd\u5e94\u793a\u4f8b\n7. Bug \u62a5\u544a\uff1a\u5305\u542b\u590d\u73b0\u6b65\u9aa4\u3001\u73af\u5883\u8be6\u60c5\u3001\u4e25\u91cd\u7ea7\u522b\n\n### explorer (3 \u9636\u6bb5)\n\n| \u9636\u6bb5 | \u540d\u79f0 | \u5185\u5bb9 |\n|------|------|------|\n| Phase 1 | Clarify | 3-5 \u4e2a\u805a\u7126\u95ee\u9898\uff0c\u6bcf\u6b21\u53ea\u95ee 1-2 \u4e2a |\n| Phase 2 | Explore | 2-4 \u8f6e\u8fed\u4ee3\u63a2\u7d22\uff0c\u6bcf\u8f6e\uff1a\u7ed3\u6784\u5316\u5206\u6790 + \u975e\u663e\u800c\u6613\u89c1\u7684\u89d2\u5ea6 + \u7528\u6237\u53cd\u9988 |\n| Phase 3 | Synthesize | \u603b\u7ed3 -> \u7528\u6237\u7ea0\u6b63 -> \u751f\u6210\u6700\u7ec8\u6587\u6863 |\n\n### agile (4 \u9636\u6bb5\uff0c28 \u5b50\u6b65\u9aa4)\n\n| \u9636\u6bb5 | \u89d2\u8272 | \u5b50\u6b65\u9aa4\u6570 |\n|------|------|---------|\n| Phase 1 | Architect - Design | 6 |\n| Phase 2 | Backend - Implement API | 8 |\n| Phase 3 | Frontend - Build UI | 7 |\n| Phase 4 | QA - Test & Validate | 7 |\n\n### devops (6 \u6b65)\n\n1. \u5148\u7406\u89e3\u90e8\u7f72\u76ee\u6807\u548c\u7ea6\u675f\n2. \u786e\u4fdd\u53ef\u590d\u73b0\u6784\u5efa\n3. \u6dfb\u52a0\u5065\u5eb7\u68c0\u67e5\u548c\u5c31\u7eea\u63a2\u9488\n4. \u6700\u5c0f\u6743\u9650\u539f\u5219\n5. \u5b9e\u73b0\u6bcf\u6b21\u90e8\u7f72\u7684\u56de\u6eda\u80fd\u529b\n6. \u4f7f\u57fa\u7840\u8bbe\u65bd\u53ef\u89c2\u6d4b\n\n### loop (3 \u9636\u6bb5)\n\n| \u9636\u6bb5 | \u540d\u79f0 | \u5b50\u6b65\u9aa4\u6570 |\n|------|------|---------|\n| Phase 1 | PLAN | 4\uff08\u7406\u89e3\u4efb\u52a1\u3001\u5b9a\u4e49\u6210\u529f\u6807\u51c6\u3001\u62c6\u89e3\u5b50\u4efb\u52a1\u3001\u8bb0\u5f55\u8fed\u4ee3\u4fe1\u606f\uff09 |\n| Phase 2 | EXECUTE | 4\uff08\u9010\u6b65\u6267\u884c\u3001\u66f4\u65b0\u8fdb\u5ea6\u3001\u8bb0\u5f55\u65b0\u4fe1\u606f\u3001\u5904\u7406\u963b\u585e\uff09 |\n| Phase 3 | EVALUATE | 2\uff08\u9010\u9879\u68c0\u67e5\u3001\u5faa\u73af\u51b3\u7b56\uff09 |\n\n---\n\n## \u5171\u540c\u6a21\u5f0f\u5206\u6790\n\n### \u6a21\u5f0f 1\uff1a\u5148\u7406\u89e3\uff0c\u540e\u6267\u884c\n\n**\u6240\u6709 skill \u7684\u7b2c\u4e00\u6b65\u90fd\u662f\"\u7406\u89e3\u9700\u6c42/\u7ea6\u675f/\u4e0a\u4e0b\u6587\"\u3002**\n\n| Skill | \u7b2c\u4e00\u6b65\u5185\u5bb9 |\n|-------|-----------|\n| architect | \"Understand requirements fully before designing\" |\n| backend | \"Parse requirements carefully. Identify all inputs, outputs, constraints, and edge cases\" |\n| frontend | \"Identify all states: default, loading, error, empty, success\" |\n| qa | \"Identify what to test: requirements, edge cases, error paths\" |\n| explorer | Phase 1 Clarify: \u805a\u7126\u95ee\u9898\u951a\u5b9a\u63a2\u7d22 |\n| agile | Phase 1 Architect: \"Parse requirements\" |\n| devops | \"Understand the deployment target and constraints before writing any config\" |\n| loop | Phase 1 PLAN: \"\u7406\u89e3\u4efb\u52a1\" |\n\n### \u6a21\u5f0f 2\uff1a\u65b9\u6848\u5148\u884c\uff0c\u5b9e\u65bd\u5728\u540e\n\n\u5927\u90e8\u5206 skill \u5728\u52a8\u624b\u4e4b\u524d\u8981\u6c42\u5148\u8bbe\u8ba1/\u89c4\u5212\u3002\n\n| Skill | \u8bbe\u8ba1\u5148\u884c\u4f53\u73b0 |\n|-------|------------|\n| architect | \u6b65\u9aa4 2-3\uff1a\u5148\u5217\u4e3e\u65b9\u6848\u3001\u9009\u65b9\u6848\uff0c\u518d\u8fdb\u5165\u7ec6\u8282\u8bbe\u8ba1 |\n| backend | \u6b65\u9aa4 2\uff1a\"Design the function/service signature first\" |\n| frontend | \u6b65\u9aa4 2\uff1a\"Design the component API before implementing\" |\n| qa | \u6b65\u9aa4 1-3\uff1a\u5148\u786e\u5b9a\u8303\u56f4\u548c\u547d\u540d\uff0c\u518d\u5199\u6d4b\u8bd5\u4f53 |\n| explorer | Phase 1 Clarify -> Phase 2 Explore |\n| agile | Phase 1 Design -> Phase 2-4 \u5b9e\u65bd |\n| devops | \u6b65\u9aa4 1\uff1a\u5148\u7406\u89e3\u7ea6\u675f |\n| loop | Phase 1 PLAN -> Phase 2 EXECUTE |\n\n### \u6a21\u5f0f 3\uff1a\u663e\u5f0f\u5904\u7406\u9519\u8bef/\u8fb9\u754c/\u5f02\u5e38\n\n\u6bcf\u4e2a skill \u90fd\u5f3a\u8c03\u4e0d\u80fd\u53ea\u5904\u7406 happy path\u3002\n\n| Skill | \u9519\u8bef/\u8fb9\u754c\u5904\u7406\u4f53\u73b0 |\n|-------|-----------------|\n| architect | \u6b65\u9aa4 5\uff1a\"Address cross-cutting concerns: error handling, security...\" |\n| backend | \u6b65\u9aa4 3-4\uff1a\u8f93\u5165\u9a8c\u8bc1 + \u663e\u5f0f\u9519\u8bef\u5904\u7406\uff0c\u6709\u5b8c\u6574\u7684\u9519\u8bef\u5904\u7406\u6a21\u5f0f |\n| frontend | \u6b65\u9aa4 1\uff1a\u5fc5\u987b\u5904\u7406 loading/error/empty/success \u56db\u79cd\u72b6\u6001 |\n| qa | \u6b65\u9aa4 4\uff1a\"Cover: happy path, boundary values, invalid inputs, concurrent scenarios\" |\n| explorer | \"Raise non-obvious angles the user might not have considered\" |\n| agile | \u6bcf\u4e2a\u9636\u6bb5\u90fd\u7ee7\u627f\u5bf9\u5e94\u89d2\u8272 skill \u7684\u9519\u8bef\u5904\u7406\u8981\u6c42 |\n| devops | \u6b65\u9aa4 5\uff1a\"Implement rollback capability\"\uff0c\u539f\u5219 \"Explicit failure modes\" |\n| loop | EVALUATE \u9636\u6bb5 + \u5b89\u5168\u9600\uff08\u6700\u5927 5 \u6b21\u8fed\u4ee3\uff09 |\n\n### \u6a21\u5f0f 4\uff1a\u5177\u4f53\u80dc\u4e8e\u62bd\u8c61\n\n\u6240\u6709 skill \u90fd\u53cd\u5bf9\u6a21\u7cca\u3001\u901a\u7528\u7684\u8f93\u51fa\uff0c\u8981\u6c42\u5177\u4f53\u548c\u53ef\u64cd\u4f5c\u3002\n\n| Skill | \u4f53\u73b0 |\n|-------|------|\n| architect | \"No vague abstractions\"\uff0c\"include CREATE TABLE statements with actual column types\" |\n| backend | \"Return specific error messages: 'Email format invalid' not 'Bad request'\" |\n| frontend | \"Use semantic elements\"\uff0c\"Do NOT build structure from generic divs\" |\n| qa | \"Assertions are specific (exact value or pattern, not just 'no error')\" |\n| explorer | \"Stay concrete: Avoid abstract advice. Ground every insight in specifics\" |\n| agile | \u7ee7\u627f\u5404\u89d2\u8272 skill \u7684\u5177\u4f53\u5316\u8981\u6c42 |\n| devops | \"parameterized, no hardcoded values\" |\n| loop | \u6210\u529f\u6807\u51c6\u5fc5\u987b\"\u53ef\u9a8c\u8bc1\uff1a\u80fd\u660e\u786e\u5224\u65ad\u901a\u8fc7\u6216\u672a\u901a\u8fc7\" |\n\n### \u6a21\u5f0f 5\uff1a\u7ed3\u6784\u5316\u4e09\u6bb5\u5f0f\u7ec4\u7ec7\n\n\u6bcf\u4e2a SKILL.md \u90fd\u9075\u5faa\u76f8\u540c\u7684\u6587\u6863\u7ed3\u6784\uff1a\n\n```\n## Process / Workflow / Core Process   <- \u6838\u5fc3\u6d41\u7a0b\uff08\u6b65\u9aa4\u6216\u9636\u6bb5\uff09\n## Output Format / Code Standards      <- \u8f93\u51fa\u683c\u5f0f\u6216\u4ee3\u7801\u6807\u51c6\n## Principles                         <- \u539f\u5219\n```\n\n\u8fd9\u8bf4\u660e\u6240\u6709 skill \u5171\u4eab\u4e00\u4e2a\u7edf\u4e00\u7684\u6a21\u677f\u6846\u67b6\u3002\n\n### \u6a21\u5f0f 6\uff1a\u9a8c\u8bc1/\u8bc4\u4f30\u95ed\u73af\n\n\u8fd1\u534a\u6570 skill \u5305\u542b\u67d0\u79cd\u5f62\u5f0f\u7684\u9a8c\u8bc1\u6216\u8bc4\u4f30\u673a\u5236\u3002\n\n| Skill | \u9a8c\u8bc1\u673a\u5236 |\n|-------|---------|\n| architect | \u6b65\u9aa4 5 \u7684\u76d1\u63a7\u90e8\u5206 |\n| backend | \u6b65\u9aa4 8 \u7684 EXPLAIN ANALYZE \u524d\u540e\u5bf9\u6bd4 |\n| frontend | \u6b65\u9aa4 5 \u7684\u4e0d\u540c\u5185\u5bb9\u957f\u5ea6\u6d4b\u8bd5 |\n| qa | \u6574\u4e2a skill \u5c31\u662f\u9a8c\u8bc1\u6d41\u7a0b |\n| explorer | Phase 3 Synthesize \u7684\u7528\u6237\u7ea0\u6b63\u73af\u8282 |\n| agile | Phase 4 QA \u6d4b\u8bd5 |\n| devops | \u6b65\u9aa4 3 \u5065\u5eb7\u68c0\u67e5 + \u6b65\u9aa4 6 \u53ef\u89c2\u6d4b\u6027 |\n| loop | Phase 3 EVALUATE + \u5faa\u73af\u51b3\u7b56 |\n\n---\n\n## \u7efc\u5408\u5bf9\u6bd4\u8868\u683c\n\n| \u7ef4\u5ea6 | architect | backend | frontend | qa | explorer | agile | devops | loop |\n|------|-----------|---------|----------|----|----------|-------|--------|------|\n| **\u6838\u5fc3\u6b65\u9aa4\u6570** | 6 | 8 | 5 | 7 | 3 \u9636\u6bb5 | 4 \u9636\u6bb5(28 \u5b50\u6b65\u9aa4) | 6 | 3 \u9636\u6bb5(10 \u5b50\u6b65\u9aa4) |\n| **\u6709\u663e\u5f0f\u9636\u6bb5\u5212\u5206** | \u5426 | \u5426 | \u5426 | \u5426 | \u662f | \u662f | \u5426 | \u662f |\n| **\u7b2c\u4e00\u6b65\uff1a\u7406\u89e3\u9700\u6c42** | \u662f | \u662f | \u662f | \u662f | \u662f | \u662f | \u662f | \u662f |\n| **\u65b9\u6848\u5148\u884c** | \u662f | \u662f | \u662f | \u662f | \u662f | \u662f | \u662f | \u662f |\n| **\u663e\u5f0f\u9519\u8bef\u5904\u7406** | \u662f | \u662f | \u662f | \u662f | \u90e8\u5206 | \u662f | \u662f | \u662f |\n| **\u8981\u6c42\u5177\u4f53\u8f93\u51fa** | \u662f | \u662f | \u662f | \u662f | \u662f | \u662f | \u662f | \u662f |\n| **\u542b\u9a8c\u8bc1\u95ed\u73af** | \u90e8\u5206 | \u662f | \u90e8\u5206 | \u662f | \u662f | \u662f | \u662f | \u662f |\n| **\u8fed\u4ee3\u5faa\u73af** | \u5426 | \u5426 | \u5426 | \u5426 | \u662f(Explore) | \u5426 | \u5426 | \u662f(\u6838\u5fc3\u673a\u5236) |\n| **\u542b Principles** | \u662f | \u5426(Code Standards) | \u662f | \u662f | \u662f | \u662f | \u662f | \u662f |\n| **\u542b Output Format** | \u662f | \u662f(Response Format) | \u90e8\u5206(Required States) | \u90e8\u5206(Test Naming) | \u662f | \u662f | \u662f | \u5426 |\n| **\u8bed\u8a00** | \u82f1\u6587 | \u82f1\u6587 | \u82f1\u6587 | \u82f1\u6587 | \u82f1\u6587 | \u82f1\u6587 | \u82f1\u6587 | \u4e2d\u6587 |\n\n---\n\n## \u603b\u7ed3\n\n1. **\u6b65\u9aa4\u6570\u91cf\u8303\u56f4**\uff1a\u5355\u89d2\u8272 skill \u7684\u6838\u5fc3\u6d41\u7a0b\u5728 5-8 \u6b65\u4e4b\u95f4\uff1b\u591a\u9636\u6bb5 skill (explorer, agile, loop) \u6709 3-4 \u4e2a\u9636\u6bb5\uff0c\u5b50\u6b65\u9aa4 10-28 \u4e2a\u3002\n\n2. **\u6700\u5927\u5171\u540c\u6a21\u5f0f**\uff1a\u6240\u6709 skill \u90fd\u9075\u5faa **\"\u7406\u89e3 -> \u8bbe\u8ba1 -> \u5b9e\u65bd -> \u9a8c\u8bc1\"** \u7684\u56db\u9636\u6bb5\u8303\u5f0f\uff0c\u5373\u4f7f\u6b65\u9aa4\u7f16\u53f7\u4e0d\u663e\u5f0f\u6807\u6ce8\u9636\u6bb5\u3002\n\n3. **\u6587\u6863\u7ed3\u6784\u4e00\u81f4**\uff1a\u6240\u6709 SKILL.md \u90fd\u4f7f\u7528 Process + Output/Standards + Principles \u7684\u4e09\u6bb5\u5f0f\u7ec4\u7ec7\u3002\n\n4. **agile \u662f\u5176\u4f59\u89d2\u8272 skill \u7684\u7f16\u6392\u7ec4\u5408**\uff1a\u5b83\u5c06 architect(6\u6b65) + backend(8\u6b65) + frontend(7\u6b65) + qa(7\u6b65) \u4e32\u8054\u6210 4 \u4e2a\u9636\u6bb5\uff0c\u672c\u8d28\u4e0a\u662f\u4e00\u4e2a meta-skill\u3002\n\n5. **loop \u662f\u552f\u4e00\u7684\u5143\u6d41\u7a0b skill**\uff1a\u5b83\u4e0d\u5904\u7406\u5177\u4f53\u9886\u57df\uff0c\u800c\u662f\u63d0\u4f9b \"PLAN -> EXECUTE -> EVALUATE\" \u7684\u901a\u7528\u6267\u884c\u5f15\u64ce\uff0c\u53ef\u4ee5\u5305\u88f9\u4efb\u4f55\u5176\u4ed6 skill\u3002\n\n6. **explorer \u548c loop \u662f\u552f\u4e8c\u5305\u542b\u8fed\u4ee3\u5faa\u73af\u673a\u5236\u7684 skill**\uff1aexplorer \u7684 Explore \u9636\u6bb5\u662f 2-4 \u8f6e\u8fed\u4ee3\u5bf9\u8bdd\uff0cloop \u7684\u6574\u4e2a\u6d41\u7a0b\u5c31\u662f\u8fed\u4ee3\u5faa\u73af\u3002\u5176\u4f59 skill \u7684\u6d41\u7a0b\u662f\u7ebf\u6027\u7684\u3002\n"}], "grading": {"run_id": "analysis-task-without_skill", "eval_name": "analysis-task", "configuration": "without_skill", "expectations": [{"text": "\u5206\u6790\u7ed3\u679c\u6587\u4ef6 analysis.md \u5df2\u521b\u5efa", "passed": true, "evidence": "File exists with 222 lines of comprehensive analysis"}, {"text": "\u8f93\u51fa\u5305\u542b markdown \u8868\u683c", "passed": true, "evidence": "Multiple tables including overview table, per-skill breakdowns, cross-phase comparison table"}, {"text": "\u8986\u76d6\u4e86 roles/ \u4e0b\u6240\u6709 skill", "passed": true, "evidence": "All 8 skills analyzed: architect, backend, frontend, qa, explorer, agile, devops, loop"}, {"text": "\u6bcf\u4e2a skill \u90fd\u6709\u6b65\u9aa4\u8ba1\u6570", "passed": true, "evidence": "Each skill has step count in overview table and detailed breakdown sections"}, {"text": "\u8bc6\u522b\u51fa\u5171\u540c\u6a21\u5f0f", "passed": true, "evidence": "Identified 6 common patterns with detailed cross-skill evidence tables"}, {"text": "\u5c55\u793a\u4e86\u660e\u786e\u7684\u8ba1\u5212\u9636\u6bb5\u548c\u6210\u529f\u6807\u51c6", "passed": false, "evidence": "No structured plan phase or success criteria. Agent went directly to reading files and analyzing."}, {"text": "\u5c55\u793a\u4e86\u8bc4\u4f30\u9636\u6bb5", "passed": false, "evidence": "No evaluation phase. Agent completed analysis and saved file without verification against predefined criteria."}], "pass_rate": 0.714, "total_assertions": 7, "passed_assertions": 5}}, {"id": "simple-edit-task-with_skill", "prompt": "\u628a README.md \u7684\u7b2c\u4e00\u884c\u6807\u9898\u4ece\u5f53\u524d\u5185\u5bb9\u6539\u6210 '# AutoSkill - \u6280\u80fd\u8bad\u7ec3\u7cfb\u7edf'\u3002", "eval_id": 3, "outputs": [{"name": "README.md", "type": "text", "content": "# AutoSkill - \u6280\u80fd\u8bad\u7ec3\u7cfb\u7edf\n\nAutonomous skill training system inspired by [autoresearch](https://github.com/karpathy/autoresearch).\n\nTrain Claude Code skills through an iterative keep/discard evolution loop.\n\n## Quick Start\n\n1. Open Claude Code in this directory\n2. Run: `/autoskill <role>` (e.g., `/autoskill architect`)\n3. The agent will set up a training branch, establish baselines, and begin iterating\n\n## How It Works\n\n```\nModify SKILL.md \u2192 Execute task \u2192 Score against rubric \u2192 Keep or discard\n```\n\n- **SKILL.md** (editable): The skill prompt being trained\n- **tasks.md** (fixed): Task suite that defines the evaluation\n- **rubric.md** (fixed): Scoring criteria (0-100)\n- **results.tsv**: Experiment log tracking all attempts\n\nImprovements are kept via git commits. Failures are discarded with git reset.\n\n## File Structure\n\n```\nautoskill/\n\u251c\u2500\u2500 roles/                      # Per-role: skill + evaluation (co-located)\n\u2502   \u251c\u2500\u2500 architect/\n\u2502   \u2502   \u251c\u2500\u2500 SKILL.md            # Trainable skill\n\u2502   \u2502   \u251c\u2500\u2500 tasks.md            # Fixed evaluation tasks\n\u2502   \u2502   \u2514\u2500\u2500 rubric.md           # Fixed scoring rubric\n\u2502   \u251c\u2500\u2500 backend/\n\u2502   \u251c\u2500\u2500 frontend/\n\u2502   \u251c\u2500\u2500 qa/\n\u2502   \u251c\u2500\u2500 explorer/\n\u2502   \u2514\u2500\u2500 ...\n\u251c\u2500\u2500 evaluate/\n\u2502   \u251c\u2500\u2500 GUIDE.md                # How to write tasks and rubrics\n\u2502   \u2514\u2500\u2500 scoring-protocol.md     # Shared scoring protocol\n\u251c\u2500\u2500 experience/\n\u2502   \u2514\u2500\u2500 patterns.md             # Accumulated best practices\n\u2514\u2500\u2500 results.tsv                 # Experiment log (untracked)\n```\n\nEach role directory is self-contained: skill, tasks, and rubric live together.\nAdding a role = adding a directory.\n\n## Adding New Roles\n\n1. Create `roles/<role>/SKILL.md` with initial skill definition\n2. Run `/generate-baseline <role>` to auto-generate tasks and rubric\n3. Or manually create `roles/<role>/tasks.md` and `roles/<role>/rubric.md`\n\n## Deploy Trained Skills\n\nCopy improved skills to your Claude Code skills directory:\n\n```bash\ncp roles/architect/SKILL.md ~/.claude/skills/architect/SKILL.md\ncp roles/backend/SKILL.md ~/.claude/skills/backend/SKILL.md\n```\n"}], "grading": {"run_id": "simple-edit-task-with_skill", "eval_name": "simple-edit-task", "configuration": "with_skill", "expectations": [{"text": "\u4fee\u6539\u540e\u7684 README.md \u5df2\u521b\u5efa", "passed": true, "evidence": "File exists at outputs/README.md"}, {"text": "\u7b2c\u4e00\u884c\u6807\u9898\u6b63\u786e\u4fee\u6539", "passed": true, "evidence": "Line 1: '# AutoSkill - \u6280\u80fd\u8bad\u7ec3\u7cfb\u7edf'"}, {"text": "\u5176\u4f59\u5185\u5bb9\u4fdd\u6301\u4e0d\u53d8", "passed": true, "evidence": "Lines 2-65 identical to original, only line 1 changed"}, {"text": "\u6ca1\u6709\u8fc7\u5ea6\u8bbe\u8ba1\u7b80\u5355\u4efb\u52a1", "passed": true, "evidence": "Recognized as simple task, kept loop minimal with 3 success criteria, no unnecessary files or documentation"}, {"text": "\u6267\u884c\u7b80\u6d01\u9ad8\u6548", "passed": true, "evidence": "Only 6 tool uses total (Read x2, Bash mkdir, Write, Read verify). No unnecessary steps."}], "pass_rate": 1.0, "total_assertions": 5, "passed_assertions": 5}}, {"id": "simple-edit-task-without_skill", "prompt": "\u628a README.md \u7684\u7b2c\u4e00\u884c\u6807\u9898\u4ece\u5f53\u524d\u5185\u5bb9\u6539\u6210 '# AutoSkill - \u6280\u80fd\u8bad\u7ec3\u7cfb\u7edf'\u3002", "eval_id": 3, "outputs": [{"name": "README.md", "type": "text", "content": "# AutoSkill - \u6280\u80fd\u8bad\u7ec3\u7cfb\u7edf\n\nAutonomous skill training system inspired by [autoresearch](https://github.com/karpathy/autoresearch).\n\nTrain Claude Code skills through an iterative keep/discard evolution loop.\n\n## Quick Start\n\n1. Open Claude Code in this directory\n2. Run: `/autoskill <role>` (e.g., `/autoskill architect`)\n3. The agent will set up a training branch, establish baselines, and begin iterating\n\n## How It Works\n\n```\nModify SKILL.md \u2192 Execute task \u2192 Score against rubric \u2192 Keep or discard\n```\n\n- **SKILL.md** (editable): The skill prompt being trained\n- **tasks.md** (fixed): Task suite that defines the evaluation\n- **rubric.md** (fixed): Scoring criteria (0-100)\n- **results.tsv**: Experiment log tracking all attempts\n\nImprovements are kept via git commits. Failures are discarded with git reset.\n\n## File Structure\n\n```\nautoskill/\n\u251c\u2500\u2500 roles/                      # Per-role: skill + evaluation (co-located)\n\u2502   \u251c\u2500\u2500 architect/\n\u2502   \u2502   \u251c\u2500\u2500 SKILL.md            # Trainable skill\n\u2502   \u2502   \u251c\u2500\u2500 tasks.md            # Fixed evaluation tasks\n\u2502   \u2502   \u2514\u2500\u2500 rubric.md           # Fixed scoring rubric\n\u2502   \u251c\u2500\u2500 backend/\n\u2502   \u251c\u2500\u2500 frontend/\n\u2502   \u251c\u2500\u2500 qa/\n\u2502   \u251c\u2500\u2500 explorer/\n\u2502   \u2514\u2500\u2500 ...\n\u251c\u2500\u2500 evaluate/\n\u2502   \u251c\u2500\u2500 GUIDE.md                # How to write tasks and rubrics\n\u2502   \u2514\u2500\u2500 scoring-protocol.md     # Shared scoring protocol\n\u251c\u2500\u2500 experience/\n\u2502   \u2514\u2500\u2500 patterns.md             # Accumulated best practices\n\u2514\u2500\u2500 results.tsv                 # Experiment log (untracked)\n```\n\nEach role directory is self-contained: skill, tasks, and rubric live together.\nAdding a role = adding a directory.\n\n## Adding New Roles\n\n1. Create `roles/<role>/SKILL.md` with initial skill definition\n2. Run `/generate-baseline <role>` to auto-generate tasks and rubric\n3. Or manually create `roles/<role>/tasks.md` and `roles/<role>/rubric.md`\n\n## Deploy Trained Skills\n\nCopy improved skills to your Claude Code skills directory:\n\n```bash\ncp roles/architect/SKILL.md ~/.claude/skills/architect/SKILL.md\ncp roles/backend/SKILL.md ~/.claude/skills/backend/SKILL.md\n```\n"}], "grading": {"run_id": "simple-edit-task-without_skill", "eval_name": "simple-edit-task", "configuration": "without_skill", "expectations": [{"text": "\u4fee\u6539\u540e\u7684 README.md \u5df2\u521b\u5efa", "passed": true, "evidence": "File exists at outputs/README.md"}, {"text": "\u7b2c\u4e00\u884c\u6807\u9898\u6b63\u786e\u4fee\u6539", "passed": true, "evidence": "Line 1: '# AutoSkill - \u6280\u80fd\u8bad\u7ec3\u7cfb\u7edf'"}, {"text": "\u5176\u4f59\u5185\u5bb9\u4fdd\u6301\u4e0d\u53d8", "passed": true, "evidence": "Lines 2-65 identical to original"}, {"text": "\u6ca1\u6709\u8fc7\u5ea6\u8bbe\u8ba1\u7b80\u5355\u4efb\u52a1", "passed": true, "evidence": "Direct execution, no overhead. 3 tool uses (Read, Read, Write)."}, {"text": "\u6267\u884c\u7b80\u6d01\u9ad8\u6548", "passed": true, "evidence": "Minimal tool usage: Read original, Write modified copy. Done."}], "pass_rate": 1.0, "total_assertions": 5, "passed_assertions": 5}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "loop", "skill_path": "roles/loop/SKILL.md", "timestamp": "2026-03-28T15:05:00Z", "iteration": 1, "evals": ["fibonacci-task", "analysis-task", "simple-edit-task"]}, "configurations": [{"name": "with_skill", "runs": [{"eval_name": "fibonacci-task", "pass_rate": 1.0, "passed": 8, "total": 8, "time_seconds": 69.5, "tokens": 13173}, {"eval_name": "analysis-task", "pass_rate": 1.0, "passed": 7, "total": 7, "time_seconds": 132.6, "tokens": 680}, {"eval_name": "simple-edit-task", "pass_rate": 1.0, "passed": 5, "total": 5, "time_seconds": 65.8, "tokens": 636}], "summary": {"mean_pass_rate": 1.0, "mean_time_seconds": 89.3, "mean_tokens": 4830, "stddev_pass_rate": 0.0, "stddev_time_seconds": 30.8, "stddev_tokens": 5886}}, {"name": "without_skill", "runs": [{"eval_name": "fibonacci-task", "pass_rate": 0.625, "passed": 5, "total": 8, "time_seconds": 31.2, "tokens": 238}, {"eval_name": "analysis-task", "pass_rate": 0.714, "passed": 5, "total": 7, "time_seconds": 286.9, "tokens": 20868}, {"eval_name": "simple-edit-task", "pass_rate": 1.0, "passed": 5, "total": 5, "time_seconds": 50.5, "tokens": 675}], "summary": {"mean_pass_rate": 0.78, "mean_time_seconds": 122.9, "mean_tokens": 7260, "stddev_pass_rate": 0.162, "stddev_time_seconds": 108.1, "stddev_tokens": 9500}}], "delta": {"pass_rate": "+0.220", "time_seconds": "-33.6", "tokens": "-2430"}, "analyst_notes": ["with_skill \u7248\u672c\u5728\u6240\u6709 3 \u4e2a\u6d4b\u8bd5\u4e2d\u5747\u8fbe\u5230 100% \u901a\u8fc7\u7387\uff0c\u800c without_skill \u5e73\u5747 78%", "\u4e3b\u8981\u5dee\u8ddd\u6765\u81ea 'plan_phase_visible'\u3001'evaluate_phase_visible'\u3001'loop_structure' \u4e09\u4e2a\u7ed3\u6784\u5316\u65ad\u8a00 \u2014 \u8fd9\u4e9b\u662f skill \u7684\u6838\u5fc3\u4ef7\u503c", "\u7b80\u5355\u7f16\u8f91\u4efb\u52a1\u4e24\u7ec4\u8868\u73b0\u76f8\u540c\uff08\u90fd\u662f 100%\uff09\uff0c\u8bf4\u660e skill \u4e0d\u4f1a\u5bf9\u7b80\u5355\u4efb\u52a1\u9020\u6210\u8d1f\u9762\u5f71\u54cd", "fibonacci \u4ee3\u7801\u8d28\u91cf\u4e24\u7ec4\u90fd\u5f88\u597d \u2014 skill \u7684\u4ef7\u503c\u5728\u4e8e\u7ed3\u6784\u5316\u6d41\u7a0b\u800c\u975e\u4ee3\u7801\u672c\u8eab", "analysis-task \u7684 without_skill \u7248\u672c\u8017\u65f6 286s vs with_skill 132s\uff0c\u4f46\u5206\u6790\u6df1\u5ea6\u76f8\u5f53\uff08with_skill \u6709 7 \u4e2a\u6a21\u5f0f vs without_skill 6 \u4e2a\uff09"]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "eval_id": 3,
+  "eval_name": "simple-edit-task",
+  "prompt": "把 README.md 的第一行标题从当前内容改成 '# AutoSkill - 技能训练系统'。",
+  "assertions": [
+    {
+      "name": "file_created",
+      "text": "修改后的 README.md 已创建",
+      "type": "file_exists",
+      "expected": true
+    },
+    {
+      "name": "correct_title",
+      "text": "第一行标题正确修改",
+      "type": "content_starts_with",
+      "expected": "# AutoSkill - 技能训练系统"
+    },
+    {
+      "name": "rest_preserved",
+      "text": "其余内容保持不变",
+      "type": "qualitative",
+      "expected": "only the first line should change, everything else intact"
+    },
+    {
+      "name": "not_overengineered",
+      "text": "with_skill 版本没有过度设计简单任务",
+      "type": "qualitative",
+      "expected": "should recognize this is a simple task and keep the loop minimal"
+    },
+    {
+      "name": "efficient_execution",
+      "text": "执行简洁高效",
+      "type": "qualitative",
+      "expected": "should not create unnecessary files or documentation for a one-line change"
+    }
+  ]
+}

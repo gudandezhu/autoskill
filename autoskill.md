@@ -129,9 +129,10 @@ LOOP FOREVER:
 6. Modify SKILL.md with the experimental change. Keep it small and targeted.
 7. `git commit -m "hypothesis: ..."`
 8. Execute the task with the modified skill. Generate output.
-9. Score the output against the rubric (fresh context, mechanical application).
-10. Record in results.tsv (do NOT commit results.tsv -- leave it untracked).
-11. If score >= baseline + 3: KEEP. Extract any new patterns into patterns.md.
+9. <MUST>Score the output against the rubric (fresh context, mechanical application — do NOT let scoring see the SKILL.md or the hypothesis).</MUST>
+10. <MUST>Before each experiment execution, completely clean output directories: `rm -rf output/run-00X/*` for each task. Verify with `ls` that directories are empty (except original/ subdirs). This prevents old outputs from contaminating new experiments.</MUST>
+11. Record in results.tsv (do NOT commit results.tsv -- leave it untracked).
+11. <MUST>If score >= baseline + 3: KEEP. You MUST extract any new generalizable patterns into experience/patterns.md with a priority tag [P1]-[P5]. Do NOT skip this step.</MUST>
 12. If score < baseline + 3: DISCARD. `git reset`.
 13. If crash: read the error, fix if trivial, skip if fundamental. Log `crash` status.
 
@@ -150,9 +151,11 @@ change itself is fundamentally broken, skip it, log `crash`, and move on.
 task. Do not repeat an exact idea that was already discarded. Try a variation
 or a different angle instead.
 
-**Pattern extraction**: When you KEEP a change, ask yourself:
+**Pattern extraction**: <MUST>When you KEEP a change, you MUST ask yourself:
 "What general principle made this work?" If it's not already in
 experience/patterns.md, add it with a priority tag [P1]-[P5].
+This step is mandatory — do not skip it even if you think the pattern
+is obvious.</MUST>
 
 **Pattern pruning**: If experience/patterns.md exceeds 200 lines, remove the
 lowest-priority patterns that have not contributed to a kept change in the
