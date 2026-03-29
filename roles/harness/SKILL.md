@@ -2,8 +2,8 @@
 name: harness
 description: "约束生成器。输入行为规则，自动生成并安装约束 AI 行为的工具（脚本/hooks/skill/context），实时生效无需重启。"
 references:
-  - tool-types.md
-  - perf-install.md
+  - references/tool-types.md
+  - references/perf-install.md
 ---
 
 # Harness — 约束生成器
@@ -12,7 +12,7 @@ references:
 
 核心能力：**规则 → 工具 → 安装 → 生效**，一条龙完成。
 
-约束工具类型和选择决策树见 [tool-types.md](tool-types.md)。
+约束工具类型和选择决策树见 [tool-types.md](references/tool-types.md)。
 
 ## Process
 
@@ -84,7 +84,7 @@ exit 0
 
 ### 4. 性能优化与安装
 
-详见 [perf-install.md](perf-install.md)。核心要点：
+详见 [perf-install.md](references/perf-install.md)。核心要点：
 - **合并优于新增**：同事件 hook 规则合并到同一脚本，禁止为每条规则创建独立脚本
 - 合并脚本必须保留原脚本名注释头
 - 脚本执行 < 500ms，优先用 sh

@@ -46,6 +46,10 @@ Priority guide:
 - [P1] harness: Hook template must include 5 defensive coding rules: (1) empty input defaults to pass-through, (2) printf '%s' instead of echo, (3) word-boundary grep matching, (4) no set -e, (5) config points (keywords, paths) as variables at script top — rule 5 boosted HARNESS-001 from 98 to 100 (可维护性 4→5)
 - [P2] harness: Use function-based dispatch (fn_check_xxx + case) in hook scripts instead of flat if blocks — improves 可维护性 from 4/5 to 5/5, boosted HARNESS-003 from 94 to 96
 
+## role-structure
+
+- [P1] role-structure: SKILL.md 必须在 roles/$ROLE/ 根目录单独存在，所有引用文件放在 roles/$ROLE/references/ 子目录中。目录结构为：`roles/$ROLE/{SKILL.md, tasks.md, rubric.md, references/*.md}`。SKILL.md 的 frontmatter `references` 字段路径应为 `references/xxx.md`
+
 ## qa
 
 (no patterns yet)

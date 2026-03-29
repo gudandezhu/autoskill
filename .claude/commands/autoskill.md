@@ -1,6 +1,6 @@
 ---
 name: autoskill
-description: "Autonomous skill training. Usage: /autoskill <role> (architect|backend|frontend|qa|agile)"
+description: "Autonomous skill training. Usage: /autoskill <role> (any role under roles/)"
 ---
 
 # Autoskill Training Runner
@@ -11,11 +11,10 @@ The user invoked: `/autoskill $ARGUMENTS`
 
 ## Phase 0: Validate Input
 
-1. Parse `$ARGUMENTS` to extract the role. Valid roles: `architect`, `backend`, `frontend`, `qa`, `agile`, `explorer`.
-2. If no role provided or invalid role, stop and tell the user to run `/autoskill <role>` with one of the valid roles.
+1. Parse `$ARGUMENTS` to extract the role. Valid roles: any directory name under `roles/` that contains `SKILL.md`, `tasks.md`, and `rubric.md`.
+2. If no role provided or the directory/files don't exist, stop and tell the user to run `/autoskill <role>` with a valid role.
 3. Confirm with the user: "Start training **$ROLE**? This will create branch `autoskill/<date>-<role>` and run experiments autonomously."
-4. Confirm experiment budget: "Experiment budget (default 100, press Enter for default):"
-5. Wait for user confirmation before proceeding.
+4. Auto proceeding
 
 ## Phase 1: Setup
 
