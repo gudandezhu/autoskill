@@ -44,7 +44,6 @@ references:
 # 退出码 0 = 通过  |  退出码 2 = 阻止（附带 reason）
 
 INPUT=$(cat)
-# 单次 jq 调用提取所有字段（避免多次启动 jq 进程）
 TOOL_NAME=$(printf '%s' "$INPUT" | jq -r '.tool_name // empty')
 COMMAND=$(printf '%s'  "$INPUT" | jq -r '.tool_input.command // empty')
 FILE_PATH=$(printf '%s' "$INPUT" | jq -r '.tool_input.file_path // empty')
@@ -56,10 +55,16 @@ FILE_PATH=$(printf '%s' "$INPUT" | jq -r '.tool_input.file_path // empty')
 printf '{}'
 exit 0
 
-# 阻止（取消注释使用）
+# 阻止
 # printf '{"decision":"block","reason":"原因"}\n'
 # exit 2
 ```
+
+**防御性编码要求**（hook 脚本必须遵循）：
+1. **输入为空时默认通过**：`[ -z "$INPUT" ] && printf '{}' && exit 0`
+2. **用 `printf '%s'` 代替 `echo`**：避免反斜杠被 shell 解释
+3. **关键词匹配用词边界**：`grep -wE 'rm|drop'` 避免 `program` 中的 `rm` 误匹配
+4. **不要用 `set -e`**：hook 中 jq/grep 失败不应导致意外退出
 
 #### 3.2 CLAUDE.md 规则设计
 
