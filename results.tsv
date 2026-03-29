@@ -13,3 +13,4 @@ cd900d8	HARNESS-004	98	baseline	169	baseline	baseline	baseline
 cd900d8	HARNESS-004	94	baseline	169	baseline	baseline	baseline
 35d166b	HARNESS-003	94	+22	171	keep	output-structure	add 配置安全+可逆 to output format
 e86d685	HARNESS-002	94	+15	147	keep	output-structure	配置安全+可逆 format also helps HARNESS-002
+cdd3ea5	HARNESS-001	98	+5	152	keep	robustness	add defensive coding requirements to hook template

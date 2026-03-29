@@ -43,6 +43,7 @@ Priority guide:
 ## harness
 
 - [P1] harness: Output format must include explicit "配置安全"（showing jq incremental update command with tmp file + mv）and "可逆"（specific steps to remove/disable each constraint）sections — evaluators consistently score these as missing; adding them boosted HARNESS-003 from 71.7 to 94
+- [P1] harness: Hook template must include 4 defensive coding rules: (1) empty input defaults to pass-through, (2) printf '%s' instead of echo, (3) word-boundary grep matching to avoid false positives, (4) no set -e — adding these boosted HARNESS-001 from 93.3 to 98
 
 ## qa
 
