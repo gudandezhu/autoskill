@@ -37,27 +37,27 @@ references:
 #### 3.1 Hook 脚本设计
 
 ```bash
-#!/bin/bash
+#!/bin/sh
 # Hook 脚本模板
 # 事件：PreToolUse / PostToolUse / UserPromptSubmit / Stop
-# 输入：stdin JSON
-# 输出：stdout JSON（退出码 0）或 stderr（退出码 2 阻止）
+# 输入：stdin JSON  |  输出：stdout JSON
+# 退出码 0 = 通过  |  退出码 2 = 阻止（附带 reason）
 
 INPUT=$(cat)
-# 解析需要的字段
-TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
-COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
-FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
+# 单次 jq 调用提取所有字段（避免多次启动 jq 进程）
+TOOL_NAME=$(printf '%s' "$INPUT" | jq -r '.tool_name // empty')
+COMMAND=$(printf '%s'  "$INPUT" | jq -r '.tool_input.command // empty')
+FILE_PATH=$(printf '%s' "$INPUT" | jq -r '.tool_input.file_path // empty')
 
-# 约束逻辑
+# 约束逻辑（按 TOOL_NAME 分发）
 # ...
 
-# 通过 → 退出码 0，输出空 JSON 或 null
-echo '{}'
+# 通过
+printf '{}'
 exit 0
 
-# 阻止 → 退出码 2，输出拒绝原因
-# echo '{"decision":"block","reason":"原因"}'
+# 阻止（取消注释使用）
+# printf '{"decision":"block","reason":"原因"}\n'
 # exit 2
 ```
 
