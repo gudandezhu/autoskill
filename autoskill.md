@@ -9,7 +9,7 @@ or discarding changes -- similar to how autoresearch trains models.
 To set up a new training run, work with the user to:
 
 1. **Agree on a target skill**: the user specifies which skill to train
-   (one of: `architect`, `backend`, `frontend`, `qa`). This is the ONLY
+   (any role with a directory under `roles/`). This is the ONLY
    skill that will be trained during this run.
 2. **Agree on a run tag**: propose a tag based on today's date (e.g. `mar27`).
    The branch `autoskill/<tag>-<skill>` must not already exist.
